@@ -44,6 +44,18 @@ pnpm build
 node dist/index.js --help
 ```
 
+## Testing
+
+This package uses Vitest for testing. Tests are co-located with the source files they're testing.
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+```
+
 ## License
 
 MIT
