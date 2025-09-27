@@ -58,13 +58,6 @@ The main client class for interacting with the FuseUI API.
 new FuseClient(options?: FuseClientOptions)
 ```
 
-##### Parameters
-
-- `options` (optional): Configuration options for the client
-  - `baseUrl` (string, optional): API base URL. Default: `"https://api.fuseui.com"`
-  - `apiVersion` (string, optional): API version. Default: `"v1"`
-  - `apiKey` (string, optional): API key for authentication
-
 #### Methods
 
 ##### `ping()`

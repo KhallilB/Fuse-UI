@@ -1,6 +1,6 @@
 /**
  * FuseUI SDK
- * 
+ *
  * This SDK provides programmatic access to the FuseUI API.
  * It is designed to work in both browser and Node.js environments.
  */
@@ -14,13 +14,13 @@ export interface FuseClientOptions {
    * @default "https://api.fuseui.com"
    */
   baseUrl?: string;
-  
+
   /**
    * API version
    * @default "v1"
    */
   apiVersion?: string;
-  
+
   /**
    * API key for authentication
    */
@@ -34,7 +34,7 @@ export class FuseClient {
   private baseUrl: string;
   private apiVersion: string;
   private apiKey?: string;
-  
+
   /**
    * Create a new FuseClient instance
    * @param options Configuration options
@@ -51,7 +51,7 @@ export class FuseClient {
    * @returns Full API URL
    */
   private getApiUrl(endpoint: string): string {
-    return `${this.baseUrl}/${this.apiVersion}/${endpoint}`;
+    return `${this.baseUrl}/api/${endpoint}`;
   }
 
   /**
