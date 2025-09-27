@@ -49,11 +49,32 @@ The project is configured with pre-commit hooks that run `turbo format-and-lint`
 
 - `apps/*`: Applications
   - `web`: Next.js web application (runs on port 3000)
+    - `src/app/sdk`: SDK demo page
   - `server`: Fastify API server (runs on port 3001)
 - `packages/*`: Shared libraries and tools
   - `core`: Core utilities and token engine
   - `sdk`: FuseUI API client SDK
   - `typescript-config`: Shared TypeScript configurations
+
+## SDK Integration
+
+The project includes a demonstration of how to use the `@fuseui/sdk` package:
+
+1. The SDK package is located in `packages/sdk`
+2. The server uses the SDK in `apps/server/src/index.ts`
+3. The web app has a demo page at `apps/web/src/app/sdk`
+
+To view the SDK demo:
+
+```bash
+# Start the server
+pnpm --filter @repo/server dev
+
+# In another terminal, start the web app
+pnpm --filter web dev
+```
+
+Then visit http://localhost:3000/sdk in your browser.
 
 ## License
 
