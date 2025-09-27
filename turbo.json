@@ -22,7 +22,10 @@
       "cache": false
     },
     "server#build": {
-      "dependsOn": ["@fuseui/core#build"]
+      "dependsOn": ["@fuseui/core#build", "@fuseui/sdk#build"]
+    },
+    "web#build": {
+      "dependsOn": ["@fuseui/sdk#build"]
     }
   }
 }
