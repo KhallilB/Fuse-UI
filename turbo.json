@@ -26,6 +26,9 @@
     },
     "web#build": {
       "dependsOn": ["@fuseui/sdk#build"]
+    },
+    "@fuseui/cli#build": {
+      "dependsOn": ["@fuseui/core#build", "@fuseui/sdk#build"]
     }
   }
 }
