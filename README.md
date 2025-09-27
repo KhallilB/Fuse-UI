@@ -47,8 +47,13 @@ The project is configured with pre-commit hooks that run `turbo format-and-lint`
 
 ## Project Structure
 
-- `apps/*`: Frontend applications
+- `apps/*`: Applications
+  - `web`: Next.js web application (runs on port 3000)
+  - `server`: Fastify API server (runs on port 3001)
 - `packages/*`: Shared libraries and tools
+  - `core`: Core utilities and token engine
+  - `sdk`: FuseUI API client SDK
+  - `typescript-config`: Shared TypeScript configurations
 
 ## License
 

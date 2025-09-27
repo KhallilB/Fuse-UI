@@ -15,13 +15,27 @@ pnpm add @fuseui/sdk
 ## Usage
 
 ```typescript
-import { FuseClient } from '@fuseui/sdk';
+import { FuseClient } from "@fuseui/sdk";
 
-// Initialize the client
-const client = new FuseClient();
+// Initialize the client with options
+const client = new FuseClient({
+  baseUrl: "https://api.fuseui.com", // Optional, defaults to this value
+  apiVersion: "v1", // Optional, defaults to 'v1'
+  apiKey: "your-api-key", // Optional, for authenticated requests
+});
 
-// Use the client
-const result = await client.someMethod();
+// Make API requests
+try {
+  // Ping the API to check connectivity
+  const pingResult = await client.ping();
+  console.log("API Status:", pingResult.status);
+
+  // Get user information
+  const user = await client.getUser();
+  console.log("User:", user);
+} catch (error) {
+  console.error("API Error:", error);
+}
 ```
 
 ## Features
@@ -30,6 +44,55 @@ const result = await client.someMethod();
 - Lightweight with minimal dependencies
 - TypeScript support
 
-## Documentation
+## API Documentation
 
 This SDK will be used for any programmatic access to the FuseUI API. More detailed documentation will be added as the API evolves.
+
+### `FuseClient`
+
+The main client class for interacting with the FuseUI API.
+
+#### Constructor
+
+```typescript
+new FuseClient(options?: FuseClientOptions)
+```
+
+##### Parameters
+
+- `options` (optional): Configuration options for the client
+  - `baseUrl` (string, optional): API base URL. Default: `"https://api.fuseui.com"`
+  - `apiVersion` (string, optional): API version. Default: `"v1"`
+  - `apiKey` (string, optional): API key for authentication
+
+#### Methods
+
+##### `ping()`
+
+Pings the API to check connectivity.
+
+```typescript
+async ping(): Promise<{ status: string; message: string }>
+```
+
+##### `getUser()`
+
+Returns information about the authenticated user.
+
+```typescript
+async getUser(): Promise<{ id: string; name: string }>
+```
+
+## Development
+
+### Building the SDK
+
+```bash
+pnpm build
+```
+
+### Running Tests
+
+```bash
+pnpm test
+```
