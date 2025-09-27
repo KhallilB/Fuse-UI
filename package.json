@@ -5,8 +5,10 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "test": "turbo run test",
+    "test:affected": "turbo run test --affected",
     "lint": "turbo run format-and-lint",
     "lint:fix": "turbo run format-and-lint:fix",
+    "lint:staged": "npx @biomejs/biome check --write --staged",
     "check-types": "turbo run check-types",
     "prepare": "husky"
   },
