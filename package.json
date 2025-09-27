@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "test": "turbo run test",
     "lint": "turbo run format-and-lint",
     "lint:fix": "turbo run format-and-lint:fix",
     "check-types": "turbo run check-types",
@@ -13,7 +14,8 @@
     "@biomejs/biome": "2.2.4",
     "husky": "^9.1.7",
     "turbo": "^2.5.8",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.17.1",
   "engines": {

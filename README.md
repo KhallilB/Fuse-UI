@@ -43,6 +43,50 @@ pnpm lint
 pnpm lint:fix
 ```
 
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for testing. Vitest is a fast and lightweight testing framework for JavaScript and TypeScript.
+
+### Running Tests
+
+```sh
+# Run all tests across the monorepo
+pnpm test
+
+# Run tests for a specific package
+pnpm --filter @fuseui/sdk test
+
+# Run tests in watch mode for a specific package
+pnpm --filter @fuseui/sdk test:watch
+```
+
+### Adding Tests
+
+Tests should be co-located with the source files they're testing. This makes it easier to find tests and maintain them as the codebase evolves.
+
+Test files should follow the naming convention `*.test.ts`, `*.test.tsx`, `*.spec.ts`, or `*.spec.tsx`.
+
+Example test file structure:
+
+```
+packages/
+  sdk/
+    src/
+      index.ts
+      index.test.ts
+
+apps/
+  web/
+    src/
+      components/
+        Navigation.tsx
+        Navigation.test.tsx
+  server/
+    src/
+      index.ts
+      index.test.ts
+```
+
 The project is configured with pre-commit hooks that run `turbo format-and-lint` automatically before each commit to ensure code quality.
 
 ## Project Structure
