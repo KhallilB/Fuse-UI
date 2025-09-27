@@ -20,6 +20,9 @@
     "format-and-lint": {},
     "format-and-lint:fix": {
       "cache": false
+    },
+    "server#build": {
+      "dependsOn": ["@fuseui/core#build"]
     }
   }
 }
