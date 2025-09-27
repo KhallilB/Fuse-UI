@@ -1,0 +1,91 @@
+# `@fuseui/sdk`
+
+The FuseUI SDK provides programmatic access to the FuseUI API. This package can be used in both browser and Node.js environments.
+
+## Installation
+
+```bash
+npm install @fuseui/sdk
+# or
+yarn add @fuseui/sdk
+# or
+pnpm add @fuseui/sdk
+```
+
+## Usage
+
+```typescript
+import { FuseClient } from "@fuseui/sdk";
+
+// Initialize the client with options
+const client = new FuseClient({
+  baseUrl: "https://api.fuseui.com", // Optional, defaults to this value
+  apiVersion: "v1", // Optional, defaults to 'v1'
+  apiKey: "your-api-key", // Optional, for authenticated requests
+});
+
+// Make API requests
+try {
+  // Ping the API to check connectivity
+  const pingResult = await client.ping();
+  console.log("API Status:", pingResult.status);
+
+  // Get user information
+  const user = await client.getUser();
+  console.log("User:", user);
+} catch (error) {
+  console.error("API Error:", error);
+}
+```
+
+## Features
+
+- Cross-platform (works in browser and Node.js)
+- Lightweight with minimal dependencies
+- TypeScript support
+
+## API Documentation
+
+This SDK will be used for any programmatic access to the FuseUI API. More detailed documentation will be added as the API evolves.
+
+### `FuseClient`
+
+The main client class for interacting with the FuseUI API.
+
+#### Constructor
+
+```typescript
+new FuseClient(options?: FuseClientOptions)
+```
+
+#### Methods
+
+##### `ping()`
+
+Pings the API to check connectivity.
+
+```typescript
+async ping(): Promise<{ status: string; message: string }>
+```
+
+##### `getUser()`
+
+Returns information about the authenticated user.
+
+```typescript
+async getUser(): Promise<{ id: string; name: string }>
+```
+
+## Development
+
+### Building the SDK
+
+```bash
+pnpm build
+```
+
+### Running Tests
+
+```bash
+pnpm test
+```
