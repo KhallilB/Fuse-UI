@@ -19,9 +19,9 @@
     "release:dry-run": "release-it --dry-run",
     "release:ci": "release-it --ci --no-git.requireCleanWorkingDir",
     "publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
-    "publish-packages:cli": "pnpm --filter @fuseui/cli publish --no-git-checks --access public || pnpm --filter @fuseui/cli publish --no-git-checks --access public --force",
-    "publish-packages:sdk": "pnpm --filter @fuseui/sdk publish --no-git-checks --access public || pnpm --filter @fuseui/sdk publish --no-git-checks --access public --force",
-    "publish-packages:dry-run": "pnpm --filter @fuseui/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui/sdk publish --dry-run --no-git-checks --access public"
+    "publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
+    "publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
+    "publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
