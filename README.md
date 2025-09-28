@@ -29,10 +29,10 @@ pnpm build
 
 ```sh
 # Start development with Docker
-pnpm docker:dev
+pnpm fuseui:up
 
 # Stop Docker containers
-pnpm docker:down
+pnpm fuseui:down
 ```
 
 See the [Docker](#docker) section for more details.
@@ -186,32 +186,53 @@ The following commands are available for Docker workflows:
 
 ```bash
 # Start development with hot reload
-pnpm docker:dev
+pnpm fuseui:up
 
 # Stop and clean up containers
-pnpm docker:down
+pnpm fuseui:down
 
 # Run tests in Docker containers
-pnpm docker:test
+pnpm fuseui:test
 
 # Build production images
-pnpm docker:build        # builds both images
-pnpm docker:build:web    # builds only the web image
-pnpm docker:build:server # builds only the server image
+pnpm fuseui:prod        # builds both images
 ```
 
 ### Production Docker Images
 
 Multi-stage builds in the root `Dockerfile` create optimized production images:
 
-- `fuseui/web:latest` (Next.js, port 3000)
-- `fuseui/server:latest` (Fastify, port 3001)
+- `khallilb/fuse-ui:web` (Next.js, port 3000)
+- `khallilb/fuse-ui:server` (Fastify, port 3001)
 
 To run a production image locally:
 
 ```bash
-docker run --rm -p 3000:3000 --env-file apps/web/.env fuseui/web:latest
-docker run --rm -p 3001:3001 --env-file apps/server/.env fuseui/server:latest
+docker run --rm -p 3000:3000 --env-file apps/web/.env khallilb/fuse-ui:web
+docker run --rm -p 3001:3001 --env-file apps/server/.env khallilb/fuse-ui:server
+```
+
+### Docker Hub Repository
+
+The Docker images are hosted on Docker Hub under the `khallilb/fuse-ui` repository.
+
+#### Pushing Images to Docker Hub
+
+To push images to Docker Hub:
+
+```bash
+# Login to Docker Hub
+docker login
+
+# Build and push images
+pnpm fuseui:prod
+pnpm fuseui:push
+```
+
+Alternatively, you can manually push a specific tag:
+
+```bash
+docker push khallilb/fuse-ui:tagname
 ```
 
 ### Troubleshooting

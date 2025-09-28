@@ -13,7 +13,7 @@
     "check-types": "turbo run check-types",
     "fuseui:up": "docker compose up --build",
     "fuseui:down": "docker compose down -v",
-    "fuseui:prod": "docker build --target web-prod -t fuseui/web:latest --target server-prod -t fuseui/server:latest .",
+    "fuseui:prod": "docker build --target web-prod -t khallilb/fuse-ui:web --target server-prod -t khallilb/fuse-ui:server .",
     "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test"
   },
   "devDependencies": {
