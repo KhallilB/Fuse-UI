@@ -19,8 +19,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "tsup": "^8.0.0",
+    "@fuseui/typescript-config": "workspace:*",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }
 }
