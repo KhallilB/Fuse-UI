@@ -11,7 +11,8 @@
     "directory": "packages/sdk"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "name": "@fuseui-org/sdk"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
