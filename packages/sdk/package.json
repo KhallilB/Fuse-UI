@@ -2,6 +2,17 @@
   "name": "@fuseui/sdk",
   "version": "0.2.1",
   "private": false,
+  "description": "FuseUI SDK for API integration",
+  "author": "FuseUI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KhallilB/FuseUI.git",
+    "directory": "packages/sdk"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
