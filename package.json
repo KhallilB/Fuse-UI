@@ -75,5 +75,5 @@
       "after:release": "echo '🚀 Released ${name} v${version}'"
     }
   },
-  "version": "0.2.2"
+  "version": "0.2.3"
 }
