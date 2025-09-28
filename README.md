@@ -263,7 +263,7 @@ docker push khallilb/fuse-ui:tagname
 
 This project uses [release-it](https://github.com/release-it/release-it) with conventional commits to automate versioning and publishing.
 
-### Quick Reference
+### Quick Reference Guide
 
 ```sh
 # Create a release (dry run)
