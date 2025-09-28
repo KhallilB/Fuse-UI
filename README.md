@@ -12,6 +12,8 @@ FuseUI is a token-first, adapter-driven release engine that turns design intent 
 
 ## Quick Start
 
+### Local Development
+
 ```sh
 # Install dependencies
 pnpm install
@@ -22,6 +24,18 @@ pnpm dev
 # Build all packages
 pnpm build
 ```
+
+### Docker Development (No Local Dependencies Required)
+
+```sh
+# Start development with Docker
+pnpm docker:dev
+
+# Stop Docker containers
+pnpm docker:down
+```
+
+See the [Docker](#docker) section for more details.
 
 ## Code Quality
 
@@ -49,6 +63,8 @@ This project uses [Vitest](https://vitest.dev/) for testing. Vitest is a fast an
 
 ### Running Tests
 
+#### Local Testing
+
 ```sh
 # Run all tests across the monorepo
 pnpm test
@@ -58,6 +74,13 @@ pnpm --filter @fuseui/sdk test
 
 # Run tests in watch mode for a specific package
 pnpm --filter @fuseui/sdk test:watch
+```
+
+#### Docker Testing
+
+```sh
+# Run all tests in Docker containers
+pnpm fuseui:test
 ```
 
 ### Adding Tests
@@ -119,6 +142,98 @@ pnpm --filter web dev
 ```
 
 Then visit http://localhost:3000/sdk in your browser.
+
+## Docker
+
+This repository provides a containerized workflow for development, testing, and production builds using Docker and Docker Compose. Using Docker eliminates the need to install Node.js and PNPM locally.
+
+### Prerequisites
+
+- Docker Desktop 4.25+
+- No local Node.js or PNPM required (everything runs in containers)
+
+### Environment Variables
+
+- Server env template: `apps/server/.env.example`
+- Web env template: `apps/web/env.example`
+
+Create runtime `.env` files based on the templates:
+
+```bash
+cp apps/server/.env.example apps/server/.env
+cp apps/web/env.example apps/web/.env
+```
+
+Environment variables used by the apps:
+
+- `apps/server/.env`
+  - `PORT` (default: 3001)
+  - `HOST` (default: 0.0.0.0)
+  - `FUSE_API_URL` (default: https://api.fuseui.com)
+  - `FUSE_API_KEY` (required for authenticated requests)
+- `apps/web/.env`
+  - `NEXT_PUBLIC_FUSE_API_URL` (default: http://localhost:3001)
+  - `NEXT_PUBLIC_FUSE_API_KEY` (optional for demo)
+
+Notes:
+
+- Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser and must not include secrets.
+- Sensitive values (e.g., API keys) should be stored securely in your CI/CD secret store when building images.
+
+### Docker Commands
+
+The following commands are available for Docker workflows:
+
+```bash
+# Start development with hot reload
+pnpm docker:dev
+
+# Stop and clean up containers
+pnpm docker:down
+
+# Run tests in Docker containers
+pnpm docker:test
+
+# Build production images
+pnpm docker:build        # builds both images
+pnpm docker:build:web    # builds only the web image
+pnpm docker:build:server # builds only the server image
+```
+
+### Production Docker Images
+
+Multi-stage builds in the root `Dockerfile` create optimized production images:
+
+- `fuseui/web:latest` (Next.js, port 3000)
+- `fuseui/server:latest` (Fastify, port 3001)
+
+To run a production image locally:
+
+```bash
+docker run --rm -p 3000:3000 --env-file apps/web/.env fuseui/web:latest
+docker run --rm -p 3001:3001 --env-file apps/server/.env fuseui/server:latest
+```
+
+### Troubleshooting
+
+- If hot reload does not trigger on file changes on macOS:
+  - Set polling for Webpack/Next.js: `export WATCHPACK_POLLING=true` (or add to `apps/web/.env`).
+  - Ensure your project folder is under Docker Desktop file sharing.
+- If `pnpm` store permissions cause issues, remove the named volume:
+  - `docker volume rm fuse-ui_pnpm-store` (volume name may vary).
+- If `EADDRINUSE` conflicts occur, make sure ports 3000/3001 are free or edit `docker-compose.yml` mappings.
+
+### CI/CD Notes
+
+- Use the same root `Dockerfile` to build images in CI:
+
+  - Web: `docker build --target web-prod -t ghcr.io/<org>/fuseui-web:<tag> .`
+  - Server: `docker build --target server-prod -t ghcr.io/<org>/fuseui-server:<tag> .`
+
+- Recommended:
+  - Push images to your container registry on merges to `main`.
+  - Pass secrets and env via CI variables; do not bake secrets into images.
+  - Leverage build cache for faster CI builds (e.g., `--cache-from`, registry-backed cache).
 
 ## License
 

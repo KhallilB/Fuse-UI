@@ -2,6 +2,7 @@
 	"name": "fuse-ui",
 	"private": true,
 	"scripts": {
+		"prepare": "husky",
 		"build": "turbo run build",
 		"dev": "turbo run dev",
 		"test": "turbo run test",
@@ -10,7 +11,12 @@
 		"lint:fix": "turbo run format-and-lint:fix",
 		"lint:staged": "biome check --write --staged",
 		"check-types": "turbo run check-types",
-		"prepare": "husky"
+		"fuseui:up": "docker compose up --build",
+		"fuseui:down": "docker compose down -v",
+		"fuseui:build:web": "docker build --target web-prod -t fuseui/web:latest .",
+		"fuseui:build:server": "docker build --target server-prod -t fuseui/server:latest .",
+		"fuseui:build": "pnpm fuseui:build:web && pnpm fuseui:build:server",
+		"fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
