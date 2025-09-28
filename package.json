@@ -9,7 +9,7 @@
     "test:affected": "turbo run test --affected",
     "lint": "turbo run format-and-lint",
     "lint:fix": "turbo run format-and-lint:fix",
-    "lint:staged": "biome check --write --staged",
+    "lint:affected": "turbo run format-and-lint --affected",
     "check-types": "turbo run check-types",
     "fuseui:up": "docker compose up --build",
     "fuseui:down": "docker compose down -v",
