@@ -1,32 +1,30 @@
 {
-	"name": "fuse-ui",
-	"private": true,
-	"scripts": {
-		"prepare": "husky",
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"test": "turbo run test",
-		"test:affected": "turbo run test --affected",
-		"lint": "turbo run format-and-lint",
-		"lint:fix": "turbo run format-and-lint:fix",
-		"lint:staged": "biome check --write --staged",
-		"check-types": "turbo run check-types",
-		"fuseui:up": "docker compose up --build",
-		"fuseui:down": "docker compose down -v",
-		"fuseui:build:web": "docker build --target web-prod -t fuseui/web:latest .",
-		"fuseui:build:server": "docker build --target server-prod -t fuseui/server:latest .",
-		"fuseui:build": "pnpm fuseui:build:web && pnpm fuseui:build:server",
-		"fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.4",
-		"husky": "^9.1.7",
-		"turbo": "^2.5.8",
-		"typescript": "5.9.2",
-		"vitest": "^3.2.4"
-	},
-	"packageManager": "pnpm@10.17.1",
-	"engines": {
-		"node": ">=18"
-	}
+  "name": "fuse-ui",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:affected": "turbo run test --affected",
+    "lint": "turbo run format-and-lint",
+    "lint:fix": "turbo run format-and-lint:fix",
+    "lint:staged": "biome check --write --staged",
+    "check-types": "turbo run check-types",
+    "fuseui:up": "docker compose up --build",
+    "fuseui:down": "docker compose down -v",
+    "fuseui:prod": "docker build --target web-prod -t fuseui/web:latest --target server-prod -t fuseui/server:latest .",
+    "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "husky": "^9.1.7",
+    "turbo": "^2.5.8",
+    "typescript": "5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20"
+  }
 }
