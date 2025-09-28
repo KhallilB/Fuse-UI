@@ -1,21 +1,21 @@
-# `@fuseui/sdk`
+# `@fuseui-org/sdk`
 
 The FuseUI SDK provides programmatic access to the FuseUI API. This package can be used in both browser and Node.js environments.
 
 ## Installation
 
 ```bash
-npm install @fuseui/sdk
+npm install @fuseui-org/sdk
 # or
-yarn add @fuseui/sdk
+yarn add @fuseui-org/sdk
 # or
-pnpm add @fuseui/sdk
+pnpm add @fuseui-org/sdk
 ```
 
 ## Usage
 
 ```typescript
-import { FuseClient } from "@fuseui/sdk";
+import { FuseClient } from "@fuseui-org/sdk";
 
 // Initialize the client with options
 const client = new FuseClient({

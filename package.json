@@ -18,10 +18,12 @@
     "release": "release-it",
     "release:dry-run": "release-it --dry-run",
     "release:ci": "release-it --ci --no-git.requireCleanWorkingDir",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "version": "release-it --ci --no-git.requireCleanWorkingDir --no-npm.publish",
     "publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
-    "publish-packages:cli": "pnpm --filter @fuseui/cli publish --no-git-checks --access public || pnpm --filter @fuseui/cli publish --no-git-checks --access public --force",
-    "publish-packages:sdk": "pnpm --filter @fuseui/sdk publish --no-git-checks --access public || pnpm --filter @fuseui/sdk publish --no-git-checks --access public --force",
-    "publish-packages:dry-run": "pnpm --filter @fuseui/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui/sdk publish --dry-run --no-git-checks --access public"
+    "publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
+    "publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
+    "publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
@@ -29,6 +31,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@release-it/bumper": "^7.0.5",
     "@release-it/conventional-changelog": "^10.0.1",
+    "conventional-changelog-cli": "^4.1.0",
     "husky": "^9.1.7",
     "release-it": "^19.0.5",
     "turbo": "^2.5.8",
@@ -48,7 +51,9 @@
     "git": {
       "commitMessage": "chore: release v${version}",
       "tagName": "v${version}",
-      "push": true
+      "push": true,
+      "requireCleanWorkingDir": true,
+      "requireBranch": "main"
     },
     "github": {
       "release": true,
@@ -61,7 +66,8 @@
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular",
-        "infile": "CHANGELOG.md"
+        "infile": "CHANGELOG.md",
+        "ignoreRecommendedBump": false
       },
       "@release-it/bumper": {
         "out": [
@@ -71,6 +77,7 @@
       }
     },
     "hooks": {
+      "before:init": "pnpm lint && pnpm test",
       "after:bump": "pnpm install && pnpm build",
       "after:release": "echo '🚀 Released ${name} v${version}'"
     }
