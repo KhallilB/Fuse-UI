@@ -3,6 +3,17 @@
   "version": "0.1.0",
   "private": false,
   "type": "module",
+  "description": "FuseUI Command Line Interface",
+  "author": "FuseUI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KhallilB/FuseUI.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "fuseui": "./dist/index.js"
   },
