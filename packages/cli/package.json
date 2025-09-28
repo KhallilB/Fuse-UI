@@ -12,7 +12,8 @@
     "directory": "packages/cli"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "name": "@fuseui-org/cli"
   },
   "bin": {
     "fuseui": "./dist/index.js"
