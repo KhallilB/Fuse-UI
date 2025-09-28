@@ -17,10 +17,14 @@
     "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
     "release": "release-it",
     "release:dry-run": "release-it --dry-run",
-    "release:ci": "release-it --ci"
+    "release:ci": "release-it --ci",
+    "sync-versions": "node scripts/sync-versions.js",
+    "prerelease": "pnpm sync-versions"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
+    "@commitlint/cli": "^20.0.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@release-it/bumper": "^7.0.5",
     "@release-it/conventional-changelog": "^10.0.1",
     "husky": "^9.1.7",
@@ -33,6 +37,11 @@
   "engines": {
     "node": ">=20"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release v${version}",
@@ -41,7 +50,8 @@
     },
     "github": {
       "release": true,
-      "draft": false
+      "draft": false,
+      "releaseName": "v${version}"
     },
     "npm": {
       "publish": false
@@ -53,12 +63,15 @@
       },
       "@release-it/bumper": {
         "out": [
-          "packages/*/package.json"
+          "packages/*/package.json",
+          "apps/*/package.json"
         ]
       }
     },
     "hooks": {
-      "after:bump": "pnpm install && pnpm build"
+      "before:init": "pnpm sync-versions",
+      "after:bump": "pnpm install && pnpm build",
+      "after:release": "echo '🚀 Released ${name} v${version}'"
     }
   }
 }
