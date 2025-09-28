@@ -1,7 +1,6 @@
 {
   "name": "fuse-ui",
   "private": true,
-  "type": "module",
   "scripts": {
     "prepare": "husky",
     "build": "turbo run build",
@@ -18,7 +17,7 @@
     "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
     "release": "release-it",
     "release:dry-run": "release-it --dry-run",
-    "release:ci": "release-it --ci",
+    "release:ci": "release-it --ci --no-git.requireCleanWorkingDir",
     "sync-versions": "node scripts/sync-versions.js",
     "prerelease": "pnpm sync-versions",
     "publish-packages": "pnpm --filter @fuseui/cli publish --access public && pnpm --filter @fuseui/sdk publish --access public",
