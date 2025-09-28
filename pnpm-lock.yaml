@@ -44,7 +44,7 @@ importers:
       '@fastify/cors':
         specifier: ^9.0.1
         version: 9.0.1
-      '@fuseui/sdk':
+      '@fuseui-org/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
       dotenv:
@@ -78,7 +78,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@fuseui/sdk':
+      '@fuseui-org/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
       next:
@@ -133,12 +133,12 @@ importers:
 
   packages/cli:
     dependencies:
+      '@fuseui-org/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@fuseui/core':
         specifier: workspace:*
         version: link:../core
-      '@fuseui/sdk':
-        specifier: workspace:*
-        version: link:../sdk
       commander:
         specifier: ^12.0.0
         version: 12.1.0
