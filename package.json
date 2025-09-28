@@ -18,11 +18,10 @@
     "release": "release-it",
     "release:dry-run": "release-it --dry-run",
     "release:ci": "release-it --ci --no-git.requireCleanWorkingDir",
-    "sync-versions": "node scripts/sync-versions.js",
     "publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
-    "publish-packages:cli": "pnpm --filter @fuseui/cli publish --access public || pnpm --filter @fuseui/cli publish --access public --force",
-    "publish-packages:sdk": "pnpm --filter @fuseui/sdk publish --access public || pnpm --filter @fuseui/sdk publish --access public --force",
-    "publish-packages:dry-run": "pnpm --filter @fuseui/cli publish --dry-run --access public && pnpm --filter @fuseui/sdk publish --dry-run --access public"
+    "publish-packages:cli": "pnpm --filter @fuseui/cli publish --no-git-checks --access public || pnpm --filter @fuseui/cli publish --no-git-checks --access public --force",
+    "publish-packages:sdk": "pnpm --filter @fuseui/sdk publish --no-git-checks --access public || pnpm --filter @fuseui/sdk publish --no-git-checks --access public --force",
+    "publish-packages:dry-run": "pnpm --filter @fuseui/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui/sdk publish --dry-run --no-git-checks --access public"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
@@ -63,10 +62,16 @@
       "@release-it/conventional-changelog": {
         "preset": "angular",
         "infile": "CHANGELOG.md"
+      },
+      "@release-it/bumper": {
+        "out": [
+          "packages/*/package.json",
+          "apps/*/package.json"
+        ]
       }
     },
     "hooks": {
-      "after:bump": "pnpm install && pnpm build && pnpm sync-versions",
+      "after:bump": "pnpm install && pnpm build",
       "after:release": "echo '🚀 Released ${name} v${version}'"
     }
   },
