@@ -53,7 +53,8 @@
       "tagName": "v${version}",
       "push": true,
       "requireCleanWorkingDir": true,
-      "requireBranch": "main"
+      "requireBranch": "main",
+      "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to} --no-merges"
     },
     "github": {
       "release": true,
@@ -67,7 +68,11 @@
       "@release-it/conventional-changelog": {
         "preset": "angular",
         "infile": "CHANGELOG.md",
-        "ignoreRecommendedBump": false
+        "ignoreRecommendedBump": false,
+        "writerOpts": {
+          "commitsSort": ["subject", "scope"],
+          "filterCommits": "^(?!Merge)"
+        }
       },
       "@release-it/bumper": {
         "out": [
