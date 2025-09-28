@@ -15,11 +15,8 @@
     "fuseui:down": "docker compose down -v",
     "fuseui:prod": "docker build --target web-prod -t khallilb/fuse-ui:web --target server-prod -t khallilb/fuse-ui:server .",
     "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
-    "release": "release-it",
-    "release:dry-run": "release-it --dry-run",
-    "release:ci": "release-it --ci --no-git.requireCleanWorkingDir",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "version": "release-it --ci --no-git.requireCleanWorkingDir --no-npm.publish",
+    "semantic-release": "semantic-release",
+    "semantic-release:dry": "semantic-release --dry-run",
     "publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
     "publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
     "publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
@@ -29,11 +26,10 @@
     "@biomejs/biome": "2.2.4",
     "@commitlint/cli": "^20.0.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@release-it/bumper": "^7.0.5",
-    "@release-it/conventional-changelog": "^10.0.1",
-    "conventional-changelog-cli": "^4.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "husky": "^9.1.7",
-    "release-it": "^19.0.5",
+    "semantic-release": "^22.0.12",
     "turbo": "^2.5.8",
     "typescript": "5.9.2",
     "vitest": "^3.2.4"
@@ -46,46 +42,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release v${version}",
-      "tagName": "v${version}",
-      "push": true,
-      "requireCleanWorkingDir": true,
-      "requireBranch": "main",
-      "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to} --no-merges"
-    },
-    "github": {
-      "release": true,
-      "draft": false,
-      "releaseName": "v${version}"
-    },
-    "npm": {
-      "publish": false
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular",
-        "infile": "CHANGELOG.md",
-        "ignoreRecommendedBump": false,
-        "writerOpts": {
-          "commitsSort": ["subject", "scope"],
-          "filterCommits": "^(?!Merge)"
-        }
-      },
-      "@release-it/bumper": {
-        "out": [
-          "packages/*/package.json",
-          "apps/*/package.json"
-        ]
-      }
-    },
-    "hooks": {
-      "before:init": "pnpm lint && pnpm test",
-      "after:bump": "pnpm install && pnpm build",
-      "after:release": "echo '🚀 Released ${name} v${version}'"
-    }
   },
   "version": "0.2.3"
 }
