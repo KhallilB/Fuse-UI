@@ -261,22 +261,23 @@ docker push khallilb/fuse-ui:tagname
 
 ## Versioning & Releases
 
-This project uses [release-it](https://github.com/release-it/release-it) with conventional commits to automate versioning and publishing.
+This project uses [semantic-release](https://github.com/semantic-release/semantic-release) with conventional commits to automate versioning and publishing.
 
-### Quick Reference Guide
+We also support [semantic-release](https://github.com/semantic-release/semantic-release) as an alternative release workflow.
 
 ```sh
-# Create a release (dry run)
-pnpm release:dry-run
+# Run semantic-release (dry run)
+pnpm semantic-release:dry
 
-# Create a release
-pnpm release
-
-# Create a specific release type
-pnpm release -- --increment=patch|minor|major
+# Run semantic-release
+pnpm semantic-release
 ```
 
-Automated releases can be triggered from GitHub Actions.
+- `fix:` commits trigger a PATCH release (e.g., 1.0.0 → 1.0.1)
+- `feat:` commits trigger a MINOR release (e.g., 1.0.0 → 1.1.0)
+- `feat:` commits with `BREAKING CHANGE:` in the footer trigger a MAJOR release (e.g., 1.0.0 → 2.0.0)
+
+Semantic-release can be manually triggered via GitHub Actions workflow dispatch.
 
 For detailed information about our versioning strategy, conventional commits, and release process, see [VERSIONING.md](./VERSIONING.md).
 
