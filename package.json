@@ -1,6 +1,7 @@
 {
   "name": "fuse-ui",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "husky",
     "build": "turbo run build",
@@ -19,7 +20,9 @@
     "release:dry-run": "release-it --dry-run",
     "release:ci": "release-it --ci",
     "sync-versions": "node scripts/sync-versions.js",
-    "prerelease": "pnpm sync-versions"
+    "prerelease": "pnpm sync-versions",
+    "publish-packages": "pnpm --filter @fuseui/cli publish --access public && pnpm --filter @fuseui/sdk publish --access public",
+    "publish-packages:dry-run": "pnpm --filter @fuseui/cli publish --dry-run --access public && pnpm --filter @fuseui/sdk publish --dry-run --access public"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
