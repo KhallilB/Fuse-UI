@@ -6,13 +6,13 @@ A command-line interface for FuseUI, a token-first, adapter-driven release engin
 
 ```bash
 # Install globally
-npm install -g @fuseui/cli
+npm install -g @fuseui-org/cli
 
 # Or use with npx
-npx @fuseui/cli --help
+npx @fuseui-org/cli --help
 
 # Or install in your project
-npm install --save-dev @fuseui/cli
+npm install --save-dev @fuseui-org/cli
 ```
 
 ## Usage

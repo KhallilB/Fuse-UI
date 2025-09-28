@@ -70,10 +70,10 @@ This project uses [Vitest](https://vitest.dev/) for testing. Vitest is a fast an
 pnpm test
 
 # Run tests for a specific package
-pnpm --filter @fuseui/sdk test
+pnpm --filter @fuseui-org/sdk test
 
 # Run tests in watch mode for a specific package
-pnpm --filter @fuseui/sdk test:watch
+pnpm --filter @fuseui-org/sdk test:watch
 ```
 
 #### Docker Testing
@@ -128,7 +128,7 @@ See [VERSIONING.md](./VERSIONING.md) for details on our versioning and release s
 
 ## SDK Integration
 
-The project includes a demonstration of how to use the `@fuseui/sdk` package:
+The project includes a demonstration of how to use the `@fuseui-org/sdk` package:
 
 1. The SDK package is located in `packages/sdk`
 2. The server uses the SDK in `apps/server/src/index.ts`
@@ -263,7 +263,7 @@ docker push khallilb/fuse-ui:tagname
 
 This project uses [release-it](https://github.com/release-it/release-it) with conventional commits to automate versioning and publishing.
 
-### Quick Reference
+### Quick Reference Guide
 
 ```sh
 # Create a release (dry run)

@@ -1,5 +1,5 @@
 {
-  "name": "@fuseui/cli",
+  "name": "@fuseui-org/cli",
   "version": "0.2.3",
   "private": false,
   "type": "module",
@@ -8,12 +8,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KhallilB/FuseUI.git",
+    "url": "git+https://github.com/KhallilB/FuseUI.git",
     "directory": "packages/cli"
   },
   "publishConfig": {
-    "access": "public",
-    "name": "@fuseui-org/cli"
+    "access": "public"
   },
   "bin": {
     "fuseui": "./dist/index.js"
@@ -34,7 +33,7 @@
   },
   "dependencies": {
     "@fuseui/core": "workspace:*",
-    "@fuseui/sdk": "workspace:*",
+    "@fuseui-org/sdk": "workspace:*",
     "commander": "^12.0.0"
   },
   "devDependencies": {
