@@ -135,7 +135,7 @@ To view the SDK demo:
 
 ```bash
 # Start the server
-pnpm --filter @repo/server dev
+pnpm --filter server dev
 
 # In another terminal, start the web app
 pnpm --filter web dev
