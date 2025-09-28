@@ -121,7 +121,10 @@ The project is configured with pre-commit hooks that run `turbo format-and-lint`
 - `packages/*`: Shared libraries and tools
   - `core`: Core utilities and token engine
   - `sdk`: FuseUI API client SDK
+  - `cli`: Command-line interface
   - `typescript-config`: Shared TypeScript configurations
+
+See [VERSIONING.md](./VERSIONING.md) for details on our versioning and release strategy.
 
 ## SDK Integration
 
@@ -256,59 +259,26 @@ docker push khallilb/fuse-ui:tagname
   - Pass secrets and env via CI variables; do not bake secrets into images.
   - Leverage build cache for faster CI builds (e.g., `--cache-from`, registry-backed cache).
 
-## Release Process
+## Versioning & Releases
 
-This project uses [release-it](https://github.com/release-it/release-it) with the conventional changelog plugin to automate versioning and publishing.
+This project uses [release-it](https://github.com/release-it/release-it) with conventional commits to automate versioning and publishing.
 
-### Commit Convention
-
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages. This enables automatic versioning and changelog generation.
-
-Commit message format:
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-Common types:
-
-- `feat`: A new feature (triggers a minor version bump)
-- `fix`: A bug fix (triggers a patch version bump)
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code changes that neither fix a bug nor add a feature
-- `perf`: Performance improvements
-- `test`: Adding or updating tests
-- `build`: Changes to the build system or dependencies
-- `ci`: Changes to CI configuration
-- `chore`: Other changes that don't modify src or test files
-
-Breaking changes are indicated by adding `BREAKING CHANGE:` in the commit footer or appending a `!` after the type/scope, which will trigger a major version bump.
-
-### Creating a Release
-
-#### Local Development
-
-To create a release locally:
+### Quick Reference
 
 ```sh
-# Dry run (no changes will be made)
+# Create a release (dry run)
 pnpm release:dry-run
 
-# Create a release with automatic version bump based on commits
+# Create a release
 pnpm release
 
 # Create a specific release type
 pnpm release -- --increment=patch|minor|major
 ```
 
-### Package Publishing
+Automated releases can be triggered from GitHub Actions.
 
-The CLI and SDK packages are configured for publishing to npm. The server and web applications are not published as npm packages.
+For detailed information about our versioning strategy, conventional commits, and release process, see [VERSIONING.md](./VERSIONING.md).
 
 ## License
 
