@@ -1,5 +1,6 @@
 {
   "name": "fuse-ui",
+  "version": "0.4.6",
   "private": true,
   "scripts": {
     "prepare": "husky",
@@ -13,7 +14,9 @@
     "check-types": "turbo run check-types",
     "fuseui:up": "docker compose up --build",
     "fuseui:down": "docker compose down -v",
-    "fuseui:prod": "docker build --target web-prod -t khallilb/fuse-ui:web --target server-prod -t khallilb/fuse-ui:server .",
+    "fuseui:prod": "docker compose -f docker-compose.prod.yml build",
+    "fuseui:prod:up": "docker compose -f docker-compose.prod.yml up",
+    "fuseui:prod:down": "docker compose -f docker-compose.prod.yml down -v",
     "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
     "semantic-release": "semantic-release",
     "semantic-release:dry": "semantic-release --dry-run",
@@ -42,6 +45,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "version": "0.4.6"
+  }
 }
