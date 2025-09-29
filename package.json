@@ -6,6 +6,8 @@
     "prepare": "husky",
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "web:prod": "pnpm --filter web start",
+    "server:prod": "pnpm --filter server start",
     "test": "turbo run test",
     "test:affected": "turbo run test --affected",
     "lint": "turbo run format-and-lint",
