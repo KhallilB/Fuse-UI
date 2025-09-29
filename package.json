@@ -1,5 +1,6 @@
 {
   "name": "fuse-ui",
+  "version": "0.4.6",
   "private": true,
   "scripts": {
     "prepare": "husky",
@@ -44,6 +45,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "version": "0.4.6"
+  }
 }
