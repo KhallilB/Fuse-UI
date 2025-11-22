@@ -54,7 +54,7 @@ importers:
         specifier: ^4.26.2
         version: 4.29.1
     devDependencies:
-      '@fuseui/typescript-config':
+      '@fuseui-org/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/node':
@@ -94,7 +94,7 @@ importers:
       '@biomejs/biome':
         specifier: 2.2.0
         version: 2.2.0
-      '@fuseui/typescript-config':
+      '@fuseui-org/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@tailwindcss/postcss':
@@ -133,17 +133,17 @@ importers:
 
   packages/cli:
     dependencies:
+      '@fuseui-org/core':
+        specifier: workspace:*
+        version: link:../core
       '@fuseui-org/sdk':
         specifier: workspace:*
         version: link:../sdk
-      '@fuseui/core':
-        specifier: workspace:*
-        version: link:../core
       commander:
         specifier: ^12.0.0
         version: 12.1.0
     devDependencies:
-      '@fuseui/typescript-config':
+      '@fuseui-org/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
@@ -158,7 +158,7 @@ importers:
 
   packages/core:
     devDependencies:
-      '@fuseui/typescript-config':
+      '@fuseui-org/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       tsup:
@@ -170,7 +170,7 @@ importers:
 
   packages/sdk:
     devDependencies:
-      '@fuseui/typescript-config':
+      '@fuseui-org/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       tsup:
