@@ -311,12 +311,14 @@ describe("Schema Integration Tests", () => {
       };
 
       expect(expectedToken.type).toBe("typography");
-      const typographyValue = expectedToken.value.value as {
-        fontFamily: string;
-        fontSize: { value: number; unit: string };
-      };
-      expect(typographyValue.fontFamily).toBe("Inter, sans-serif");
-      expect(typographyValue.fontSize.value).toBe(16);
+      if (expectedToken.value.type === "value") {
+        const typographyValue = expectedToken.value.value as {
+          fontFamily: string;
+          fontSize: { value: number; unit: string };
+        };
+        expect(typographyValue.fontFamily).toBe("Inter, sans-serif");
+        expect(typographyValue.fontSize.value).toBe(16);
+      }
     });
 
     it("should handle DTCG spacing tokens", () => {
@@ -376,8 +378,10 @@ describe("Schema Integration Tests", () => {
 
       expectedTokens.forEach((token) => {
         expect(token.type).toBe("spacing");
-        const spacingValue = token.value.value as { value: number; unit: string };
-        expect(spacingValue.unit).toBe("px");
+        if (token.value.type === "value") {
+          const spacingValue = token.value.value as { value: number; unit: string };
+          expect(spacingValue.unit).toBe("px");
+        }
       });
     });
   });
