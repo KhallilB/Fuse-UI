@@ -1,6 +1,6 @@
 # `@fuseui-org/sdk`
 
-The FuseUI SDK provides programmatic access to the FuseUI API. This package can be used in both browser and Node.js environments.
+FuseUI SDK providing programmatic access to the FuseUI API. Works in both browser and Node.js environments.
 
 ## Installation
 
@@ -38,17 +38,9 @@ try {
 }
 ```
 
-## Features
-
-- Cross-platform (works in browser and Node.js)
-- Lightweight with minimal dependencies
-- TypeScript support
-
 ## API Documentation
 
-This SDK will be used for any programmatic access to the FuseUI API. More detailed documentation will be added as the API evolves.
-
-### `FuseClient`
+### FuseClient
 
 The main client class for interacting with the FuseUI API.
 
@@ -78,14 +70,18 @@ async getUser(): Promise<{ id: string; name: string }>
 
 ## Development
 
-### Building the SDK
+### Building
 
 ```bash
 pnpm build
 ```
 
-### Running Tests
+### Testing
 
 ```bash
 pnpm test
 ```
+
+## Related Documentation
+
+- [CHANGELOG.md](../../CHANGELOG.md) - Version history
