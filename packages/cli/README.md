@@ -1,14 +1,17 @@
-# FuseUI CLI
+# `@fuseui-org/cli`
 
-A command-line interface for FuseUI, a token-first, adapter-driven release engine that turns design intent into reviewed, versioned UI code packages.
+Command-line interface for FuseUI that manages design tokens and generates code from design intent.
 
 ## Installation
 
 ```bash
-# Install globally
 npm install -g @fuseui-org/cli
+# or
+yarn global add @fuseui-org/cli
+# or
+pnpm add -g @fuseui-org/cli
 
-# Or use with npx
+# Or use with npx (no installation required)
 npx @fuseui-org/cli --help
 
 # Or install in your project
@@ -33,29 +36,18 @@ fuseui generate
 
 ## Development
 
-```bash
-# Install dependencies
-pnpm install
+### Building
 
-# Build the CLI
+```bash
 pnpm build
-
-# Run the CLI in development mode
-node dist/index.js --help
 ```
 
-## Testing
-
-This package uses Vitest for testing. Tests are co-located with the source files they're testing.
+### Testing
 
 ```bash
-# Run tests
 pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
 ```
 
-## License
+## Related Documentation
 
-MIT
+- [CHANGELOG.md](../../CHANGELOG.md) - Version history
