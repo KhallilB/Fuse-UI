@@ -1,5 +1,5 @@
 {
-  "name": "@fuseui/core",
+  "name": "@fuseui-org/core",
   "version": "0.2.3",
   "private": true,
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@fuseui/typescript-config": "workspace:*",
+    "@fuseui-org/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }

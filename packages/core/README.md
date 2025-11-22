@@ -1,21 +1,21 @@
-# `@fuseui/core`
+# `@fuseui-org/core`
 
 Core token processing engine for FuseUI that handles ingestion, transformation, and export of design tokens from various sources into multiple output formats.
 
 ## Installation
 
 ```bash
-npm install @fuseui/core
+npm install @fuseui-org/core
 # or
-yarn add @fuseui/core
+yarn add @fuseui-org/core
 # or
-pnpm add @fuseui/core
+pnpm add @fuseui-org/core
 ```
 
 ## Usage
 
 ```typescript
-import { TokenEngine } from '@fuseui/core';
+import { TokenEngine } from '@fuseui-org/core';
 
 // Initialize the engine
 const engine = new TokenEngine();
