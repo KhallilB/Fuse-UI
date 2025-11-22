@@ -1,16 +1,23 @@
 # `@fuseui/core`
 
-Core functionality for the FuseUI design token processing system.
+Core token processing engine for FuseUI that handles ingestion, transformation, and export of design tokens from various sources into multiple output formats.
 
-## Overview
+## Installation
 
-This package provides the core token processing engine for FuseUI. It handles the ingestion, transformation, and export of design tokens from various sources into multiple output formats.
+```bash
+npm install @fuseui/core
+# or
+yarn add @fuseui/core
+# or
+pnpm add @fuseui/core
+```
 
 ## Usage
 
 ```typescript
 import { TokenEngine } from '@fuseui/core';
 
+// Initialize the engine
 const engine = new TokenEngine();
 
 // Process tokens from a source
@@ -26,13 +33,7 @@ const transformedTokens = engine.transformTokens(processedTokens, 'css');
 engine.exportTokens(transformedTokens, 'path/to/output');
 ```
 
-## Features
-
-- Token ingestion from various sources
-- Token transformation to multiple formats
-- Token export to different destinations
-
-## API
+## API Documentation
 
 ### TokenEngine
 
@@ -43,3 +44,23 @@ The main class for processing design tokens.
 - `processTokens(source: unknown): unknown` - Process tokens from a source
 - `transformTokens(tokens: unknown, format: string): unknown` - Transform tokens to a specific format
 - `exportTokens(tokens: unknown, destination: string): void` - Export tokens to a destination
+
+## Development
+
+### Building
+
+```bash
+pnpm build
+```
+
+### Testing
+
+```bash
+pnpm test
+```
+
+## Related Documentation
+
+- [CHANGELOG.md](../../CHANGELOG.md) - Version history
+- [TOKEN_SPEC.md](./TOKEN_SPEC.md) - Token input sources and data model specification
+- [Types Documentation](./src/types/README.md) - Type definitions and usage
