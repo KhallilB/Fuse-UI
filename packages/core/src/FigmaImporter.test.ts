@@ -669,8 +669,7 @@ describe("FigmaImporter", () => {
     });
 
     it("should handle other API errors", async () => {
-      // Mock both API calls since Promise.all runs them in parallel
-      // The error happens on the first call (variables)
+      // Mock both API calls - both fail
       (global.fetch as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({
           ok: false,
@@ -691,6 +690,62 @@ describe("FigmaImporter", () => {
       });
 
       await expect(importer.ingest()).rejects.toThrow("Internal server error");
+    });
+
+    it("should return partial results when collections fail but variables succeed", async () => {
+      const mockVariablesResponse = {
+        meta: {
+          variables: {
+            "VariableID:123": {
+              id: "VariableID:123",
+              name: "color/primary",
+              key: "primary",
+              variable_collection_id: "CollectionID:456",
+              resolved_type: "COLOR",
+              description: "Primary brand color",
+              hidden_from_publishing: false,
+              scopes: [],
+              code_syntax: {},
+              values_by_mode: {
+                "ModeID:light": {
+                  type: "VALUE",
+                  value: "#FF5733",
+                  resolvedType: "COLOR",
+                },
+              },
+              remote: false,
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
+            },
+          },
+        },
+      };
+
+      (global.fetch as ReturnType<typeof vi.fn>)
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => mockVariablesResponse,
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          headers: new Headers(),
+          json: async () => ({ err: "Collections API error" }),
+        });
+
+      const importer = new FigmaImporter({
+        apiKey: mockApiKey,
+        fileKey: mockFileKey,
+      });
+
+      const result = await importer.ingest();
+
+      // Should return tokens even though collections failed
+      expect(result.tokenSet.tokens).toHaveProperty("color.primary");
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings.some((w) => w.includes("collections"))).toBe(true);
+      expect(result.errors).toEqual([]);
     });
 
     it("should log warnings for unsupported variable types", async () => {
