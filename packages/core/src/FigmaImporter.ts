@@ -13,6 +13,7 @@ import {
 export interface FigmaImporterConfig {
 	apiKey: string
 	fileKey: string
+	/** @default "https://api.figma.com" */
 	apiBaseUrl?: string
 }
 
@@ -22,6 +23,12 @@ export interface FigmaImporterResult {
 	errors: string[]
 }
 
+/**
+ * Imports design tokens from Figma Variables API.
+ * 
+ * Fetches variables and collections, normalizes them to the internal token schema,
+ * and resolves alias references between variables.
+ */
 export class FigmaImporter {
 	private readonly apiClient: FigmaApiClient
 	private readonly fileKey: string
@@ -35,6 +42,11 @@ export class FigmaImporter {
 		})
 	}
 
+	/**
+	 * Fetches and normalizes Figma variables into a token set.
+	 * 
+	 * @throws {Error} If variables cannot be fetched (collections are optional)
+	 */
 	async ingest(): Promise<FigmaImporterResult> {
 		const warnings: string[] = []
 		const errors: string[] = []
