@@ -74,7 +74,7 @@ export function parseHexColor(hex: string): ColorValue | null {
 
 export function parseRgbaColor(rgba: string): ColorValue | null {
 	const match = rgba.match(
-		/rgba?\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
+		/rgba\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
 	);
 
 	if (!match) {
