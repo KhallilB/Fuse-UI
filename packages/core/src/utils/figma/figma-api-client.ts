@@ -1,10 +1,3 @@
-/**
- * Figma API client for making authenticated requests
- * 
- * Handles HTTP requests to the Figma REST API with proper error handling
- * and authentication.
- */
-
 import type {
 	FigmaErrorResponse,
 	FigmaVariableCollectionsResponse,
@@ -17,9 +10,6 @@ export interface FigmaApiClientConfig {
 	apiBaseUrl?: string;
 }
 
-/**
- * Figma API client for fetching variables and collections
- */
 export class FigmaApiClient {
 	private readonly apiKey: string;
 	private readonly fileKey: string;
@@ -38,9 +28,6 @@ export class FigmaApiClient {
 		this.apiBaseUrl = config.apiBaseUrl || "https://api.figma.com";
 	}
 
-	/**
-	 * Fetches variables from Figma API
-	 */
 	async fetchVariables(): Promise<FigmaVariablesResponse> {
 		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variables/local`;
 		const response = await this.makeRequest<FigmaVariablesResponse>(url);
@@ -52,9 +39,6 @@ export class FigmaApiClient {
 		return response;
 	}
 
-	/**
-	 * Fetches variable collections from Figma API
-	 */
 	async fetchVariableCollections(): Promise<FigmaVariableCollectionsResponse> {
 		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variable-collections`;
 		const response = await this.makeRequest<FigmaVariableCollectionsResponse>(url);
@@ -66,9 +50,6 @@ export class FigmaApiClient {
 		return response;
 	}
 
-	/**
-	 * Makes an authenticated request to the Figma API
-	 */
 	private async makeRequest<T>(url: string): Promise<T> {
 		const response = await fetch(url, {
 			headers: {

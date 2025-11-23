@@ -1,10 +1,3 @@
-/**
- * Figma Importer Module
- *
- * Authenticates with Figma and fetches Variables (tokens) from a file.
- * Normalizes tokens to the internal FuseUI schema.
- */
-
 import type { FigmaVariable, FigmaVariableCollection } from "./types/figma-api"
 import type {
 	NormalizedToken,
@@ -17,35 +10,18 @@ import {
 	normalizeVariableName,
 } from "./utils/figma/figma-normalizers"
 
-/**
- * Configuration for Figma import
- */
 export interface FigmaImporterConfig {
-	/** Figma Personal Access Token */
 	apiKey: string
-	/** Figma file key (ID) */
 	fileKey: string
-	/** Optional: Custom API base URL (defaults to https://api.figma.com) */
 	apiBaseUrl?: string
 }
 
-/**
- * Result of importing Figma variables
- */
 export interface FigmaImporterResult {
-	/** Normalized token set */
 	tokenSet: NormalizedTokenSet
-	/** Warnings encountered during import */
 	warnings: string[]
-	/** Errors encountered during import */
 	errors: string[]
 }
 
-/**
- * Figma importer orchestrator
- *
- * Coordinates fetching and normalizing Figma variables into tokens.
- */
 export class FigmaImporter {
 	private readonly apiClient: FigmaApiClient
 	private readonly fileKey: string
@@ -59,9 +35,6 @@ export class FigmaImporter {
 		})
 	}
 
-	/**
-	 * Fetches all variables and collections from Figma and normalizes them
-	 */
 	async ingest(): Promise<FigmaImporterResult> {
 		const warnings: string[] = []
 		const errors: string[] = []

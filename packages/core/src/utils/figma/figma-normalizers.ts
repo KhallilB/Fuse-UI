@@ -1,9 +1,3 @@
-/**
- * Figma normalization utilities
- * 
- * Converts Figma API responses to normalized token format.
- */
-
 import type {
 	FigmaVariable,
 	FigmaVariableValue,
@@ -18,9 +12,6 @@ import type {
 } from "../../types/token-types";
 import { parseColor } from "./color-parser";
 
-/**
- * Maps Figma variable type to internal token type
- */
 export function mapFigmaTypeToTokenType(
 	figmaType: FigmaVariable["resolved_type"],
 ): TokenType | null {
@@ -38,17 +29,10 @@ export function mapFigmaTypeToTokenType(
 	}
 }
 
-/**
- * Normalizes a variable name to a dot-separated path
- * Converts "color/primary" -> "color.primary"
- */
 export function normalizeVariableName(name: string): string {
 	return name.replace(/\//g, ".").replace(/\s+/g, "-").toLowerCase();
 }
 
-/**
- * Parses a raw value based on the resolved type
- */
 export function parseValue(
 	value: string | number | boolean | undefined,
 	resolvedType: FigmaVariable["resolved_type"],
@@ -73,7 +57,8 @@ export function parseValue(
 }
 
 /**
- * Normalizes a Figma variable value to TokenValueOrAlias
+ * Normalizes a Figma variable value to TokenValueOrAlias.
+ * Handles alias resolution by mapping variable IDs to token names.
  */
 export function normalizeVariableValue(
 	value: FigmaVariableValue,
@@ -123,7 +108,8 @@ export function normalizeVariableValue(
 }
 
 /**
- * Normalizes a Figma variable to the internal token schema
+ * Normalizes a Figma variable to the internal token schema.
+ * Processes default value from first mode and additional mode-specific values.
  */
 export function normalizeVariable(
 	variable: FigmaVariable,

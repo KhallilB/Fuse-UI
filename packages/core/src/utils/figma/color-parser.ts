@@ -1,14 +1,5 @@
-/**
- * Color parsing utilities for Figma import
- * 
- * Parses various color formats (hex, rgb, rgba) into normalized ColorValue format.
- */
-
 import type { ColorValue } from "../../types/token-types";
 
-/**
- * Parses a color string (hex or rgba) to ColorValue
- */
 export function parseColor(colorString: string): ColorValue | null {
 	if (!colorString) {
 		return null;
@@ -33,9 +24,6 @@ export function parseColor(colorString: string): ColorValue | null {
 	return null;
 }
 
-/**
- * Parses a hex color string to ColorValue
- */
 export function parseHexColor(hex: string): ColorValue | null {
 	// Remove # if present
 	const hexClean = hex.replace("#", "");
@@ -84,9 +72,6 @@ export function parseHexColor(hex: string): ColorValue | null {
 	return null;
 }
 
-/**
- * Parses an rgba color string to ColorValue
- */
 export function parseRgbaColor(rgba: string): ColorValue | null {
 	const match = rgba.match(
 		/rgba?\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
@@ -110,9 +95,6 @@ export function parseRgbaColor(rgba: string): ColorValue | null {
 	};
 }
 
-/**
- * Parses an rgb color string to ColorValue
- */
 export function parseRgbColor(rgb: string): ColorValue | null {
 	const match = rgb.match(
 		/rgb\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/i,
