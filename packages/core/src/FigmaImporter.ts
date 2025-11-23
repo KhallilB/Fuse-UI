@@ -10,6 +10,7 @@ import {
 	normalizeVariableName,
 } from "./utils/figma/figma-normalizers"
 
+/** Configuration for Figma importer. */
 export interface FigmaImporterConfig {
 	apiKey: string
 	fileKey: string
@@ -17,6 +18,7 @@ export interface FigmaImporterConfig {
 	apiBaseUrl?: string
 }
 
+/** Result of Figma import operation. */
 export interface FigmaImporterResult {
 	tokenSet: NormalizedTokenSet
 	warnings: string[]

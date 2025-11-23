@@ -1,5 +1,11 @@
 import type { ColorValue } from "../../types/token-types";
 
+/**
+ * Parses color strings in hex, rgb, or rgba format.
+ * 
+ * Note: RGB values are normalized to 0-1 range, not 0-255.
+ * Returns null for unsupported formats.
+ */
 export function parseColor(colorString: string): ColorValue | null {
 	if (!colorString) {
 		return null;
@@ -24,6 +30,10 @@ export function parseColor(colorString: string): ColorValue | null {
 	return null;
 }
 
+/**
+ * Parses hex color strings (#RGB, #RRGGBB, or #RRGGBBAA).
+ * Returns normalized RGBA values (0-1 range).
+ */
 export function parseHexColor(hex: string): ColorValue | null {
 	// Remove # if present
 	const hexClean = hex.replace("#", "");
@@ -90,6 +100,10 @@ export function parseHexColor(hex: string): ColorValue | null {
 	return null;
 }
 
+/**
+ * Parses rgba() color strings.
+ * Note: RGB values are normalized from 0-255 to 0-1 range.
+ */
 export function parseRgbaColor(rgba: string): ColorValue | null {
 	const match = rgba.match(
 		/rgba\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
@@ -118,6 +132,10 @@ export function parseRgbaColor(rgba: string): ColorValue | null {
 	};
 }
 
+/**
+ * Parses rgb() color strings.
+ * Note: RGB values are normalized from 0-255 to 0-1 range.
+ */
 export function parseRgbColor(rgb: string): ColorValue | null {
 	const match = rgb.match(
 		/rgb\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/i,
