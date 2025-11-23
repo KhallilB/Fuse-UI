@@ -43,9 +43,9 @@ export function parseHexColor(hex: string): ColorValue | null {
 
 	// Handle 6-digit hex (#RRGGBB)
 	if (hexClean.length === 6) {
-		const r = parseInt(hexClean.substring(0, 2) ?? "00", 16);
-		const g = parseInt(hexClean.substring(2, 4) ?? "00", 16);
-		const b = parseInt(hexClean.substring(4, 6) ?? "00", 16);
+		const r = parseInt(hexClean.substring(0, 2), 16);
+		const g = parseInt(hexClean.substring(2, 4), 16);
+		const b = parseInt(hexClean.substring(4, 6), 16);
 		return {
 			r: r / 255,
 			g: g / 255,
@@ -56,10 +56,10 @@ export function parseHexColor(hex: string): ColorValue | null {
 
 	// Handle 8-digit hex (#RRGGBBAA)
 	if (hexClean.length === 8) {
-		const r = parseInt(hexClean.substring(0, 2) ?? "00", 16);
-		const g = parseInt(hexClean.substring(2, 4) ?? "00", 16);
-		const b = parseInt(hexClean.substring(4, 6) ?? "00", 16);
-		const a = parseInt(hexClean.substring(6, 8) ?? "FF", 16);
+		const r = parseInt(hexClean.substring(0, 2), 16);
+		const g = parseInt(hexClean.substring(2, 4), 16);
+		const b = parseInt(hexClean.substring(4, 6), 16);
+		const a = parseInt(hexClean.substring(6, 8), 16);
 		return {
 			r: r / 255,
 			g: g / 255,
