@@ -4,6 +4,7 @@ import type {
 	FigmaVariablesResponse,
 } from "../../types/figma-api";
 
+/** Configuration for Figma API client. */
 export interface FigmaApiClientConfig {
 	apiKey: string;
 	fileKey: string;
