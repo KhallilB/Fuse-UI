@@ -322,4 +322,3 @@ describe("Token Types", () => {
     });
   });
 });
-
