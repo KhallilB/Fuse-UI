@@ -104,6 +104,7 @@ export class FigmaImporter {
 
 		// Normalize variables to tokens
 		const tokens: Record<string, NormalizedToken> = {}
+		const tokenNameToVariableId = new Map<string, string>()
 		for (const [id, variable] of Object.entries(variables) as [
 			string,
 			FigmaVariable,
@@ -117,6 +118,15 @@ export class FigmaImporter {
 					collectionIdToDefaultModeId.get(variable.variable_collection_id),
 				)
 				if (token) {
+					// Detect name collisions
+					const existingVariableId = tokenNameToVariableId.get(token.name)
+					if (existingVariableId && existingVariableId !== id) {
+						const existingVariable = variables[existingVariableId]
+						const warning = `Token name collision: Variables "${variable.name}" (${id}) and "${existingVariable?.name || existingVariableId}" (${existingVariableId}) both normalize to "${token.name}". The later variable will overwrite the earlier one.`
+						warnings.push(warning)
+						console.warn(warning)
+					}
+					tokenNameToVariableId.set(token.name, id)
 					tokens[token.name] = token
 				}
 			} catch (error: unknown) {

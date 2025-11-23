@@ -44,8 +44,13 @@ export function parseValue(
 	switch (resolvedType) {
 		case "BOOLEAN":
 			return typeof value === "boolean" ? value : Boolean(value);
-		case "FLOAT":
-			return typeof value === "number" ? value : Number(value);
+		case "FLOAT": {
+			const numValue = typeof value === "number" ? value : Number(value);
+			if (Number.isNaN(numValue)) {
+				return null;
+			}
+			return numValue;
+		}
 		case "STRING":
 			return String(value);
 		case "COLOR":

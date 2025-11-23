@@ -904,5 +904,135 @@ describe("FigmaImporter", () => {
         })
       );
     });
+
+    it("should detect and warn about token name collisions", async () => {
+      const mockVariablesResponse = {
+        meta: {
+          variables: {
+            "VariableID:1": {
+              id: "VariableID:1",
+              name: "color/primary",
+              key: "primary",
+              variable_collection_id: "CollectionID:456",
+              resolved_type: "COLOR",
+              description: "",
+              hidden_from_publishing: false,
+              scopes: [],
+              code_syntax: {},
+              values_by_mode: {
+                "ModeID:light": {
+                  type: "VALUE",
+                  value: "#FF5733",
+                  resolvedType: "COLOR",
+                },
+              },
+              remote: false,
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
+            },
+            "VariableID:2": {
+              id: "VariableID:2",
+              name: "color.primary",
+              key: "primary",
+              variable_collection_id: "CollectionID:456",
+              resolved_type: "COLOR",
+              description: "",
+              hidden_from_publishing: false,
+              scopes: [],
+              code_syntax: {},
+              values_by_mode: {
+                "ModeID:light": {
+                  type: "VALUE",
+                  value: "#00FF00",
+                  resolvedType: "COLOR",
+                },
+              },
+              remote: false,
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
+            },
+            "VariableID:3": {
+              id: "VariableID:3",
+              name: "COLOR/PRIMARY",
+              key: "primary",
+              variable_collection_id: "CollectionID:456",
+              resolved_type: "COLOR",
+              description: "",
+              hidden_from_publishing: false,
+              scopes: [],
+              code_syntax: {},
+              values_by_mode: {
+                "ModeID:light": {
+                  type: "VALUE",
+                  value: "#0000FF",
+                  resolvedType: "COLOR",
+                },
+              },
+              remote: false,
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
+            },
+          },
+        },
+      };
+
+      const mockCollectionsResponse = {
+        meta: {
+          variableCollections: {
+            "CollectionID:456": {
+              id: "CollectionID:456",
+              name: "Colors",
+              key: "colors",
+              modes: [{ mode_id: "ModeID:light", name: "Light" }],
+              default_mode_id: "ModeID:light",
+              remote: false,
+              hidden_from_publishing: false,
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
+            },
+          },
+        },
+      };
+
+      (global.fetch as ReturnType<typeof vi.fn>)
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => mockVariablesResponse,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => mockCollectionsResponse,
+        });
+
+      const importer = new FigmaImporter({
+        apiKey: mockApiKey,
+        fileKey: mockFileKey,
+      });
+
+      const result = await importer.ingest();
+
+      // Should have warnings for collisions
+      const collisionWarnings = result.warnings.filter((w) =>
+        w.includes("Token name collision")
+      );
+      expect(collisionWarnings.length).toBeGreaterThan(0);
+
+      // All three variables normalize to "color.primary"
+      expect(collisionWarnings.some((w) => w.includes("color/primary"))).toBe(
+        true
+      );
+      expect(collisionWarnings.some((w) => w.includes("color.primary"))).toBe(
+        true
+      );
+      expect(collisionWarnings.some((w) => w.includes("COLOR/PRIMARY"))).toBe(
+        true
+      );
+
+      // Only one token should exist (the last one overwrites)
+      expect(Object.keys(result.tokenSet.tokens)).toContain("color.primary");
+      expect(Object.keys(result.tokenSet.tokens).length).toBe(1);
+    });
   });
 });
