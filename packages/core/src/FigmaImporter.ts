@@ -79,9 +79,12 @@ export class FigmaImporter {
 
 		// Build a map of mode ID to mode name for each collection
 		const modeIdToName = new Map<string, string>()
+		// Build a map of collection ID to default mode ID
+		const collectionIdToDefaultModeId = new Map<string, string>()
 		for (const collection of Object.values(
 			collections,
 		) as FigmaVariableCollection[]) {
+			collectionIdToDefaultModeId.set(collection.id, collection.default_mode_id)
 			for (const mode of collection.modes) {
 				modeIdToName.set(mode.mode_id, mode.name)
 			}
@@ -99,6 +102,7 @@ export class FigmaImporter {
 					variableIdToName,
 					modeIdToName,
 					warnings,
+					collectionIdToDefaultModeId.get(variable.variable_collection_id),
 				)
 				if (token) {
 					tokens[token.name] = token

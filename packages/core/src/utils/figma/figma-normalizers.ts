@@ -109,13 +109,14 @@ export function normalizeVariableValue(
 
 /**
  * Normalizes a Figma variable to the internal token schema.
- * Processes default value from first mode and additional mode-specific values.
+ * Processes default value from collection's default mode, or first mode if default mode is not available.
  */
 export function normalizeVariable(
 	variable: FigmaVariable,
 	variableIdToName: Map<string, string>,
 	modeIdToName: Map<string, string>,
 	warnings: string[],
+	defaultModeId?: string,
 ): NormalizedToken | null {
 	const tokenName = normalizeVariableName(variable.name);
 	const tokenType = mapFigmaTypeToTokenType(variable.resolved_type);
@@ -127,7 +128,7 @@ export function normalizeVariable(
 		return null;
 	}
 
-	// Process default value (use first mode or default mode from collection)
+	// Process default value (use default mode from collection, or first mode as fallback)
 	const modeEntries = Object.entries(variable.values_by_mode);
 	if (modeEntries.length === 0) {
 		console.warn(
@@ -136,14 +137,32 @@ export function normalizeVariable(
 		return null;
 	}
 
-	const firstEntry = modeEntries[0];
-	if (!firstEntry) {
+	// Find the default mode value, or fall back to first mode
+	let defaultModeValue: FigmaVariableValue | undefined;
+	let selectedDefaultModeId: string;
+
+	if (defaultModeId && variable.values_by_mode[defaultModeId]) {
+		// Use the collection's designated default mode
+		selectedDefaultModeId = defaultModeId;
+		defaultModeValue = variable.values_by_mode[defaultModeId];
+	} else {
+		// Fall back to first mode if default mode is not available or not found
+		const firstEntry = modeEntries[0];
+		if (!firstEntry) {
+			return null;
+		}
+		[selectedDefaultModeId, defaultModeValue] = firstEntry;
+	}
+
+	if (!defaultModeValue) {
+		console.warn(
+			`Variable "${variable.name}" (${variable.id}) has no default value. Skipping.`,
+		);
 		return null;
 	}
 
-	const [firstModeId, firstModeValue] = firstEntry;
 	const defaultValue = normalizeVariableValue(
-		firstModeValue,
+		defaultModeValue,
 		variable.resolved_type,
 		variableIdToName,
 	);
@@ -158,8 +177,8 @@ export function normalizeVariable(
 	// Process mode-specific values
 	const modes: Record<string, TokenValueOrAlias> = {};
 	for (const [modeId, modeValue] of Object.entries(variable.values_by_mode)) {
-		// Skip the first mode as it's already used as the default
-		if (modeId === firstModeId) {
+		// Skip the default mode as it's already used as the default value
+		if (modeId === selectedDefaultModeId) {
 			continue;
 		}
 
