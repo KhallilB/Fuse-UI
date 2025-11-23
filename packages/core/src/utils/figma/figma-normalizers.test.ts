@@ -53,6 +53,21 @@ describe("figma-normalizers", () => {
 			expect(parseValue(42, "FLOAT")).toBe(42)
 		})
 
+		it("parses numeric string values to numbers", () => {
+			expect(parseValue("42", "FLOAT")).toBe(42)
+			expect(parseValue("3.14", "FLOAT")).toBe(3.14)
+		})
+
+		it("returns null for invalid numeric strings that produce NaN", () => {
+			expect(parseValue("invalid", "FLOAT")).toBeNull()
+			expect(parseValue("not-a-number", "FLOAT")).toBeNull()
+			expect(parseValue("abc", "FLOAT")).toBeNull()
+		})
+
+		it("returns null for NaN number values", () => {
+			expect(parseValue(NaN, "FLOAT")).toBeNull()
+		})
+
 		it("parses string values", () => {
 			expect(parseValue("test", "STRING")).toBe("test")
 		})
