@@ -7,14 +7,23 @@ import type {
 export interface FigmaApiClientConfig {
 	apiKey: string;
 	fileKey: string;
+	/** @default "https://api.figma.com" */
 	apiBaseUrl?: string;
 }
 
+/**
+ * Client for Figma REST API Variables endpoints.
+ * 
+ * @see https://developers.figma.com/docs/rest-api/variables-endpoints/
+ */
 export class FigmaApiClient {
 	private readonly apiKey: string;
 	private readonly fileKey: string;
 	private readonly apiBaseUrl: string;
 
+	/**
+	 * @throws {Error} If apiKey or fileKey is missing
+	 */
 	constructor(config: FigmaApiClientConfig) {
 		if (!config.apiKey) {
 			throw new Error("Figma API key (Personal Access Token) is required");
@@ -28,6 +37,12 @@ export class FigmaApiClient {
 		this.apiBaseUrl = config.apiBaseUrl || "https://api.figma.com";
 	}
 
+	/**
+	 * Fetches all local variables from the Figma file.
+	 * 
+	 * @throws {Error} If API request fails, rate limit exceeded (429), authentication fails (401/403), or file not found (404)
+	 * @throws {Error} If response is missing variables data
+	 */
 	async fetchVariables(): Promise<FigmaVariablesResponse> {
 		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variables/local`;
 		const response = await this.makeRequest<FigmaVariablesResponse>(url);
@@ -39,6 +54,12 @@ export class FigmaApiClient {
 		return response;
 	}
 
+	/**
+	 * Fetches all variable collections from the Figma file.
+	 * 
+	 * @throws {Error} If API request fails, rate limit exceeded (429), authentication fails (401/403), or file not found (404)
+	 * @throws {Error} If response is missing variableCollections data
+	 */
 	async fetchVariableCollections(): Promise<FigmaVariableCollectionsResponse> {
 		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variable-collections`;
 		const response = await this.makeRequest<FigmaVariableCollectionsResponse>(url);
