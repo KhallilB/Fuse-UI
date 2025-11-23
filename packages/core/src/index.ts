@@ -1,3 +1,8 @@
+export type {
+	FigmaImporterConfig,
+	FigmaImporterResult,
+} from "./FigmaImporter"
+export { FigmaImporter } from "./FigmaImporter"
 export { TokenEngine } from "./TokenEngine"
 
 export type {

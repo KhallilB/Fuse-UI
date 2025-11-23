@@ -1,0 +1,113 @@
+/**
+ * Figma API client for making authenticated requests
+ * 
+ * Handles HTTP requests to the Figma REST API with proper error handling
+ * and authentication.
+ */
+
+import type {
+	FigmaErrorResponse,
+	FigmaVariableCollectionsResponse,
+	FigmaVariablesResponse,
+} from "../../types/figma-api";
+
+export interface FigmaApiClientConfig {
+	apiKey: string;
+	fileKey: string;
+	apiBaseUrl?: string;
+}
+
+/**
+ * Figma API client for fetching variables and collections
+ */
+export class FigmaApiClient {
+	private readonly apiKey: string;
+	private readonly fileKey: string;
+	private readonly apiBaseUrl: string;
+
+	constructor(config: FigmaApiClientConfig) {
+		if (!config.apiKey) {
+			throw new Error("Figma API key (Personal Access Token) is required");
+		}
+		if (!config.fileKey) {
+			throw new Error("Figma file key is required");
+		}
+
+		this.apiKey = config.apiKey;
+		this.fileKey = config.fileKey;
+		this.apiBaseUrl = config.apiBaseUrl || "https://api.figma.com";
+	}
+
+	/**
+	 * Fetches variables from Figma API
+	 */
+	async fetchVariables(): Promise<FigmaVariablesResponse> {
+		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variables/local`;
+		const response = await this.makeRequest<FigmaVariablesResponse>(url);
+
+		if (!response.meta?.variables) {
+			throw new Error("Invalid response: missing variables");
+		}
+
+		return response;
+	}
+
+	/**
+	 * Fetches variable collections from Figma API
+	 */
+	async fetchVariableCollections(): Promise<FigmaVariableCollectionsResponse> {
+		const url = `${this.apiBaseUrl}/v1/files/${this.fileKey}/variable-collections`;
+		const response = await this.makeRequest<FigmaVariableCollectionsResponse>(url);
+
+		if (!response.meta?.variableCollections) {
+			throw new Error("Invalid response: missing variableCollections");
+		}
+
+		return response;
+	}
+
+	/**
+	 * Makes an authenticated request to the Figma API
+	 */
+	private async makeRequest<T>(url: string): Promise<T> {
+		const response = await fetch(url, {
+			headers: {
+				"X-Figma-Token": this.apiKey,
+			},
+		});
+
+		// Handle rate limiting
+		if (response.status === 429) {
+			const retryAfter = response.headers.get("Retry-After");
+			const message = `Rate limit exceeded${retryAfter ? `. Retry after ${retryAfter} seconds` : ""}`;
+			throw new Error(message);
+		}
+
+		// Handle authentication errors
+		if (response.status === 401 || response.status === 403) {
+			throw new Error("Authentication failed: Invalid or expired Personal Access Token");
+		}
+
+		// Handle file not found
+		if (response.status === 404) {
+			throw new Error(`File not found: Invalid file key "${this.fileKey}"`);
+		}
+
+		// Handle other errors
+		if (!response.ok) {
+			let errorMessage = `API request failed with status ${response.status}`;
+			try {
+				const errorData = (await response.json()) as FigmaErrorResponse;
+				if (errorData.err) {
+					errorMessage = errorData.err;
+				}
+			} catch {
+				// Ignore JSON parse errors
+			}
+			throw new Error(errorMessage);
+		}
+
+		return (await response.json()) as T;
+	}
+}
+
