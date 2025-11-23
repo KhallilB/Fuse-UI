@@ -18,7 +18,7 @@ import {
   ColorValue,
   FigmaVariablesInput,
   DTCGJsonInput,
-} from "@fuseui/core";
+} from "@fuseui-org/core";
 
 // Create a normalized token
 const token: NormalizedToken = {

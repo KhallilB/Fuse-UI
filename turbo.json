@@ -26,13 +26,13 @@
       "cache": false
     },
     "server#build": {
-      "dependsOn": ["@fuseui/core#build", "@fuseui-org/sdk#build"]
+      "dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
     },
     "web#build": {
       "dependsOn": ["@fuseui-org/sdk#build"]
     },
     "@fuseui-org/cli#build": {
-      "dependsOn": ["@fuseui/core#build", "@fuseui-org/sdk#build"]
+      "dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
     }
   }
 }
