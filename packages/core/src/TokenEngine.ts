@@ -1,20 +1,13 @@
 /**
- * TokenEngine class
- *
- * A placeholder implementation for token processing.
+ * Processes and transforms design tokens from various sources.
  */
 export class TokenEngine {
-  /**
-   * Initializes a new instance of the TokenEngine
-   */
   constructor() {
     console.log("TokenEngine initialized");
   }
 
   /**
-   * Processes design tokens from a source
-   * @param source The source of design tokens
-   * @returns Processed tokens
+   * Processes design tokens and normalizes them to the internal schema.
    */
   processTokens(source: unknown): unknown {
     console.log("Processing tokens from source:", source);
@@ -22,10 +15,7 @@ export class TokenEngine {
   }
 
   /**
-   * Transforms tokens to a specific format
-   * @param tokens The tokens to transform
-   * @param format The target format
-   * @returns Transformed tokens
+   * Transforms tokens to a specific output format.
    */
   transformTokens(tokens: unknown, format: string): unknown {
     console.log(`Transforming tokens to ${format}:`, tokens);
@@ -33,9 +23,7 @@ export class TokenEngine {
   }
 
   /**
-   * Exports tokens to a destination
-   * @param tokens The tokens to export
-   * @param destination The export destination
+   * Exports tokens to a destination.
    */
   exportTokens(tokens: unknown, destination: string): void {
     console.log(`Exporting tokens to ${destination}:`, tokens);

@@ -45,12 +45,14 @@ export {
 	validateAliasReferences,
 } from "./types/validators"
 
+/** Token source configuration for processing. */
 export type TokenSource = {
 	type: string
 	path?: string
 	content?: unknown
 }
 
+/** Supported token output formats. */
 export type TokenFormat =
 	| "css"
 	| "js"
@@ -60,6 +62,7 @@ export type TokenFormat =
 	| "chakra"
 	| string
 
+/** Options for exporting tokens to a destination. */
 export type TokenExportOptions = {
 	format: TokenFormat
 	destination: string

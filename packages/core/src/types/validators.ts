@@ -1,8 +1,6 @@
 /**
- * Validation utilities for token types and schemas
- *
- * These utilities can be used to validate token data at runtime,
- * complementing the TypeScript type system.
+ * Validation utilities for token types and schemas.
+ * These utilities complement the TypeScript type system for runtime validation.
  */
 
 import type {
@@ -12,9 +10,6 @@ import type {
   TokenValueOrAlias,
 } from "./token-types";
 
-/**
- * Valid token types
- */
 const VALID_TOKEN_TYPES: readonly TokenType[] = [
   "color",
   "spacing",
@@ -27,9 +22,7 @@ const VALID_TOKEN_TYPES: readonly TokenType[] = [
   "boolean",
 ] as const;
 
-/**
- * Validates that a value is a valid token type
- */
+/** Type guard for valid token types. */
 export function isValidTokenType(value: unknown): value is TokenType {
   return (
     typeof value === "string" &&
@@ -37,11 +30,9 @@ export function isValidTokenType(value: unknown): value is TokenType {
   );
 }
 
-/**
- * Validates that a value is a valid TokenValueOrAlias
- */
+/** Type guard for TokenValueOrAlias. */
 export function isValidTokenValueOrAlias(
-  value: unknown,
+	value: unknown,
 ): value is TokenValueOrAlias {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -62,11 +53,9 @@ export function isValidTokenValueOrAlias(
   return false;
 }
 
-/**
- * Validates a normalized token
- */
+/** Type guard for normalized tokens. */
 export function isValidNormalizedToken(
-  token: unknown,
+	token: unknown,
 ): token is NormalizedToken {
   if (typeof token !== "object" || token === null) {
     return false;
@@ -106,11 +95,9 @@ export function isValidNormalizedToken(
   return true;
 }
 
-/**
- * Validates a normalized token set
- */
+/** Type guard for normalized token sets. */
 export function isValidNormalizedTokenSet(
-  tokenSet: unknown,
+	tokenSet: unknown,
 ): tokenSet is NormalizedTokenSet {
   if (typeof tokenSet !== "object" || tokenSet === null) {
     return false;
@@ -134,13 +121,15 @@ export function isValidNormalizedTokenSet(
 }
 
 /**
- * Validates that all required token types are present in a token set
+ * Validates that all required token types are present in a token set.
+ * 
+ * @returns Object with `valid` boolean and `missing` array of absent token types.
  */
 export function hasRequiredTokenTypes(
-  tokenSet: NormalizedTokenSet,
+	tokenSet: NormalizedTokenSet,
 ): {
-  valid: boolean;
-  missing: TokenType[];
+	valid: boolean;
+	missing: TokenType[];
 } {
   const requiredTypes: TokenType[] = [
     "color",
@@ -164,13 +153,15 @@ export function hasRequiredTokenTypes(
 }
 
 /**
- * Validates that token aliases reference existing tokens
+ * Validates that token aliases reference existing tokens.
+ * 
+ * @returns Object with `valid` boolean and `errors` array of invalid references.
  */
 export function validateAliasReferences(
-  tokenSet: NormalizedTokenSet,
+	tokenSet: NormalizedTokenSet,
 ): {
-  valid: boolean;
-  errors: Array<{ tokenName: string; reference: string }>;
+	valid: boolean;
+	errors: Array<{ tokenName: string; reference: string }>;
 } {
   const errors: Array<{ tokenName: string; reference: string }> = [];
   const tokenNames = new Set(Object.keys(tokenSet.tokens));
@@ -208,13 +199,15 @@ export function validateAliasReferences(
 }
 
 /**
- * Detects circular references in token aliases
+ * Detects circular references in token aliases.
+ * 
+ * @returns Object with `hasCircular` boolean and `cycles` array of detected cycles.
  */
 export function detectCircularReferences(
-  tokenSet: NormalizedTokenSet,
+	tokenSet: NormalizedTokenSet,
 ): {
-  hasCircular: boolean;
-  cycles: Array<{ tokens: string[] }>;
+	hasCircular: boolean;
+	cycles: Array<{ tokens: string[] }>;
 } {
   const cycles: Array<{ tokens: string[] }> = [];
   const visited = new Set<string>();
