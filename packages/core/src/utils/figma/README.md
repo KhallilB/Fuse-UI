@@ -5,11 +5,11 @@ Fetches and normalizes Figma Variables into FuseUI tokens.
 ## Usage
 
 ```typescript
-import { FigmaImporter } from '@fuseui-org/core';
+import { FigmaImporter } from "@fuseui-org/core";
 
 const importer = new FigmaImporter({
-  apiKey: 'figd_your_personal_access_token',
-  fileKey: 'your-figma-file-key',
+  apiKey: "figd_your_personal_access_token",
+  fileKey: "your-figma-file-key",
 });
 
 const result = await importer.ingest();
@@ -48,4 +48,3 @@ const result = await importer.ingest();
 - [Figma Variables API](https://developers.figma.com/docs/rest-api/variables-endpoints/)
 - [Core README](../../../README.md) - Package overview
 - [Token Spec](../../../TOKEN_SPEC.md) - Token data model
-
