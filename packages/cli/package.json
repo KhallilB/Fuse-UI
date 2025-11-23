@@ -32,12 +32,12 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@fuseui/core": "workspace:*",
+    "@fuseui-org/core": "workspace:*",
     "@fuseui-org/sdk": "workspace:*",
     "commander": "^12.0.0"
   },
   "devDependencies": {
-    "@fuseui/typescript-config": "workspace:*",
+    "@fuseui-org/typescript-config": "workspace:*",
     "@types/node": "^20.11.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"

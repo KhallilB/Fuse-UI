@@ -30,7 +30,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@fuseui/typescript-config": "workspace:*",
+    "@fuseui-org/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   }
