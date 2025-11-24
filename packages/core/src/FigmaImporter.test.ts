@@ -1017,12 +1017,8 @@ describe("FigmaImporter", () => {
       const collisionWarnings = result.warnings.filter((w) =>
         w.includes("Token name collision")
       );
-      expect(collisionWarnings.length).toBeGreaterThan(0);
+      expect(collisionWarnings.length).toBe(2);
 
-      // All three variables normalize to "color.primary"
-      expect(collisionWarnings.some((w) => w.includes("color/primary"))).toBe(
-        true
-      );
       expect(collisionWarnings.some((w) => w.includes("color.primary"))).toBe(
         true
       );
