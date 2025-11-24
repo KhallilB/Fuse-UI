@@ -9,6 +9,10 @@ import type {
 } from "../../types/token-types";
 import { parseColor } from "../parsers/color-parser";
 
+/**
+ * Maps Figma variable resolved types to internal token types.
+ * Returns null for unsupported types.
+ */
 export function mapFigmaTypeToTokenType(
   figmaType: FigmaVariable["resolved_type"]
 ): TokenType | null {
@@ -26,10 +30,18 @@ export function mapFigmaTypeToTokenType(
   }
 }
 
+/**
+ * Normalizes Figma variable names to token names.
+ * Converts slashes to dots, spaces to hyphens, and lowercases the result.
+ */
 export function normalizeVariableName(name: string): string {
   return name.replace(/\//g, ".").replace(/\s+/g, "-").toLowerCase();
 }
 
+/**
+ * Parses a Figma variable value to the internal token value format.
+ * Handles type coercion and color parsing. Returns null for invalid values.
+ */
 export function parseValue(
   value: string | number | boolean | undefined,
   resolvedType: FigmaVariable["resolved_type"]

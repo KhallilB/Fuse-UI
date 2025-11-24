@@ -1,12 +1,7 @@
 /**
- * Input Source Type Definitions
- *
  * Type definitions for supported token input sources.
  */
 
-/**
- * Figma Variables API input source
- */
 export interface FigmaVariablesInput {
   type: "figma";
   fileKey: string;
@@ -16,10 +11,10 @@ export interface FigmaVariablesInput {
 }
 
 /**
- * Figma Variable input (from API)
+ * Figma Variable input from API response.
  * 
- * Aligned with Figma REST API response structure.
  * For ALIAS type values, the `value` field contains the variable ID as a string.
+ * @see https://developers.figma.com/docs/rest-api/variables-endpoints/
  */
 export interface FigmaVariableInput {
   id: string;
@@ -55,9 +50,8 @@ export interface FigmaVariableValueInput {
 }
 
 /**
- * Figma Variable Collection input
- * 
- * Aligned with Figma REST API response structure.
+ * Figma Variable Collection input from API response.
+ * @see https://developers.figma.com/docs/rest-api/variables-endpoints/
  */
 export interface FigmaVariableCollectionInput {
   id: string;
@@ -74,46 +68,27 @@ export interface FigmaVariableCollectionInput {
   updated_at: string;
 }
 
-/**
- * DTCG JSON input source
- */
 export interface DTCGJsonInput {
   type: "dtcg";
   content: DTCGTokenFile;
   filePath?: string;
 }
 
-/**
- * DTCG token file structure
- */
 export interface DTCGTokenFile {
   $schema?: string;
   [key: string]: DTCGTokenGroup | DTCGToken | unknown;
 }
 
-/**
- * DTCG token group (container for tokens)
- */
 export interface DTCGTokenGroup {
   [key: string]: DTCGToken | DTCGTokenGroup;
 }
 
 /**
- * DTCG token definition
- * 
- * DTCG format uses individual token types (not composite):
- * - `color`: Color values (hex, rgb, rgba strings)
- * - `dimension`: Spacing/size values with units (e.g., "16px", "1rem")
- * - `fontFamily`: Font family names
- * - `fontSize`: Font size (dimension)
- * - `fontWeight`: Font weight (number or string like "400", "bold")
- * - `lineHeight`: Line height (dimension or number)
- * - `letterSpacing`: Letter spacing (dimension)
- * - `borderRadius`: Border radius (dimension)
- * - `shadow`: Shadow values (array of shadow objects or string)
+ * DTCG token definition.
  * 
  * Aliases use `{token.path}` syntax in the `$value` field.
  * Modes can be nested as child objects or use `$extensions`.
+ * @see https://tr.designtokens.org/format/
  */
 export interface DTCGToken {
   $type?: string; // Token type: "color", "dimension", "fontFamily", etc.
@@ -124,23 +99,16 @@ export interface DTCGToken {
   [key: string]: DTCGToken | DTCGTokenGroup | unknown;
 }
 
-/**
- * Union type for all input sources
- */
 export type TokenInputSource = FigmaVariablesInput | DTCGJsonInput;
 
-/**
- * Type guard for Figma input
- */
+/** Type guard for Figma input. */
 export function isFigmaInput(
   input: TokenInputSource,
 ): input is FigmaVariablesInput {
   return input.type === "figma";
 }
 
-/**
- * Type guard for DTCG input
- */
+/** Type guard for DTCG input. */
 export function isDTCGInput(input: TokenInputSource): input is DTCGJsonInput {
   return input.type === "dtcg";
 }
