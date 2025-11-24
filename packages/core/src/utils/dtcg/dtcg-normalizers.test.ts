@@ -107,6 +107,29 @@ describe("dtcg-normalizers", () => {
 			)
 		})
 
+		it("parses lineHeight as unitless number", () => {
+			expect(parseDTCGValue(1.5, "lineHeight")).toBe(1.5)
+			expect(parseDTCGValue(1, "lineHeight")).toBe(1)
+			expect(parseDTCGValue(24, "lineHeight")).toBe(24)
+		})
+
+		it("parses lineHeight as dimension string", () => {
+			expect(parseDTCGValue("24px", "lineHeight")).toEqual({
+				value: 24,
+				unit: "px",
+			})
+			expect(parseDTCGValue("1.5rem", "lineHeight")).toEqual({
+				value: 1.5,
+				unit: "rem",
+			})
+		})
+
+		it("returns null for invalid lineHeight values", () => {
+			expect(parseDTCGValue(null, "lineHeight")).toBeNull()
+			expect(parseDTCGValue(undefined, "lineHeight")).toBeNull()
+			expect(parseDTCGValue({}, "lineHeight")).toBeNull()
+		})
+
 		it("returns null for invalid values", () => {
 			expect(parseDTCGValue(null, "color")).toBeNull()
 			expect(parseDTCGValue(undefined, "color")).toBeNull()
@@ -264,6 +287,41 @@ describe("dtcg-normalizers", () => {
 			expect(typographyValue.fontSize).toEqual({ value: 16, unit: "px" })
 			expect(typographyValue.fontWeight).toBe(400)
 			expect(typographyValue.lineHeight).toEqual({ value: 24, unit: "px" })
+		})
+
+		it("composes typography groups with unitless lineHeight", () => {
+			const file: DTCGTokenFile = {
+				typography: {
+					body: {
+						fontFamily: {
+							$type: "fontFamily",
+							$value: "Inter, sans-serif",
+						},
+						fontSize: {
+							$type: "dimension",
+							$value: "16px",
+						},
+						lineHeight: {
+							$type: "lineHeight",
+							$value: 1.5, // Unitless number
+						},
+					},
+				},
+			}
+
+			const tokens = flattenDTCGTokens(file)
+			expect(tokens.size).toBe(1)
+			const typographyToken = tokens.get("typography.body")
+			expect(typographyToken).toBeDefined()
+			expect(typographyToken?.$type).toBe("typography")
+			const typographyValue = typographyToken?.$value as {
+				fontFamily: string
+				fontSize: { value: number; unit: string }
+				lineHeight: number
+			}
+			expect(typographyValue.fontFamily).toBe("Inter, sans-serif")
+			expect(typographyValue.fontSize).toEqual({ value: 16, unit: "px" })
+			expect(typographyValue.lineHeight).toBe(1.5)
 		})
 
 		it("skips individual typography property tokens when part of a group", () => {

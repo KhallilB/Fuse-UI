@@ -74,13 +74,23 @@ export function parseDTCGValue(
 
 		case "dimension":
 		case "fontSize":
-		case "lineHeight":
 		case "letterSpacing":
 		case "borderRadius": {
 			if (typeof value !== "string") {
 				return null
 			}
 			return parseDimension(value)
+		}
+
+		case "lineHeight": {
+			// lineHeight can be a unitless number (1.5) or a dimension string ("24px")
+			if (typeof value === "number") {
+				return value
+			}
+			if (typeof value === "string") {
+				return parseDimension(value)
+			}
+			return null
 		}
 
 		case "fontWeight": {
