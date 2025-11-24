@@ -1,5 +1,8 @@
 import type { ColorValue } from "../../types/token-types";
 
+/**
+ * Parses a color string (hex, rgb, rgba) into a ColorValue.
+ */
 export function parseColor(colorString: string): ColorValue | null {
 	if (!colorString) {
 		return null;
@@ -24,6 +27,9 @@ export function parseColor(colorString: string): ColorValue | null {
 	return null;
 }
 
+/**
+ * Parses a hex color string (#RRGGBB, #RRGGBBAA, or #RGB).
+ */
 export function parseHexColor(hex: string): ColorValue | null {
 	// Remove # if present
 	const hexClean = hex.replace("#", "");
@@ -33,12 +39,12 @@ export function parseHexColor(hex: string): ColorValue | null {
 		const r = parseInt((hexClean[0] ?? "") + (hexClean[0] ?? ""), 16);
 		const g = parseInt((hexClean[1] ?? "") + (hexClean[1] ?? ""), 16);
 		const b = parseInt((hexClean[2] ?? "") + (hexClean[2] ?? ""), 16);
-		
+
 		if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
 			console.warn(`Invalid hex color format: ${hex}`);
 			return null;
 		}
-		
+
 		return {
 			r: r / 255,
 			g: g / 255,
@@ -52,12 +58,12 @@ export function parseHexColor(hex: string): ColorValue | null {
 		const r = parseInt(hexClean.substring(0, 2), 16);
 		const g = parseInt(hexClean.substring(2, 4), 16);
 		const b = parseInt(hexClean.substring(4, 6), 16);
-		
+
 		if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
 			console.warn(`Invalid hex color format: ${hex}`);
 			return null;
 		}
-		
+
 		return {
 			r: r / 255,
 			g: g / 255,
@@ -72,12 +78,17 @@ export function parseHexColor(hex: string): ColorValue | null {
 		const g = parseInt(hexClean.substring(2, 4), 16);
 		const b = parseInt(hexClean.substring(4, 6), 16);
 		const a = parseInt(hexClean.substring(6, 8), 16);
-		
-		if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b) || Number.isNaN(a)) {
+
+		if (
+			Number.isNaN(r) ||
+			Number.isNaN(g) ||
+			Number.isNaN(b) ||
+			Number.isNaN(a)
+		) {
 			console.warn(`Invalid hex color format: ${hex}`);
 			return null;
 		}
-		
+
 		return {
 			r: r / 255,
 			g: g / 255,
@@ -90,6 +101,9 @@ export function parseHexColor(hex: string): ColorValue | null {
 	return null;
 }
 
+/**
+ * Parses an rgba color string (rgba(r, g, b, a)).
+ */
 export function parseRgbaColor(rgba: string): ColorValue | null {
 	const match = rgba.match(
 		/rgba\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
@@ -118,6 +132,9 @@ export function parseRgbaColor(rgba: string): ColorValue | null {
 	};
 }
 
+/**
+ * Parses an rgb color string (rgb(r, g, b)).
+ */
 export function parseRgbColor(rgb: string): ColorValue | null {
 	const match = rgb.match(
 		/rgb\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/i,
