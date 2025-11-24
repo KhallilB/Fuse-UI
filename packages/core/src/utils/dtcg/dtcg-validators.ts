@@ -127,10 +127,7 @@ function validateTokenValue(value: unknown, type: string): void {
       type === "letterSpacing" ||
       type === "borderRadius"
     ) {
-      // Type check: dimension values should be strings
-      if (typeof value === "string") {
-        return;
-      }
+      return;
     }
   }
 
