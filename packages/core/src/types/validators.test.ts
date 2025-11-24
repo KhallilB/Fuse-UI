@@ -31,7 +31,7 @@ describe("Validators", () => {
         isValidTokenValueOrAlias({
           type: "value",
           value: { r: 1, g: 0, b: 0, a: 1 },
-        }),
+        })
       ).toBe(true);
     });
 
@@ -40,7 +40,7 @@ describe("Validators", () => {
         isValidTokenValueOrAlias({
           type: "alias",
           reference: "color.primary",
-        }),
+        })
       ).toBe(true);
     });
 
@@ -95,7 +95,7 @@ describe("Validators", () => {
           name: "test",
           type: "invalid",
           value: { type: "value", value: "test" },
-        }),
+        })
       ).toBe(false);
     });
   });
@@ -127,7 +127,7 @@ describe("Validators", () => {
           tokens: {
             invalid: {} as NormalizedToken,
           },
-        }),
+        })
       ).toBe(false);
     });
   });
@@ -347,4 +347,3 @@ describe("Validators", () => {
     });
   });
 });
-
