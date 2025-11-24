@@ -1,9 +1,6 @@
 import type { FigmaVariable, FigmaVariableCollection } from "./types/figma-api"
-import type {
-	NormalizedToken,
-	NormalizedTokenSet,
-	TokenSetMetadata,
-} from "./types/token-types"
+import type { ImporterResult, TokenImporter } from "./types/importer-types"
+import type { NormalizedToken, TokenSetMetadata } from "./types/token-types"
 import { FigmaApiClient } from "./utils/figma/figma-api-client"
 import {
 	normalizeVariable,
@@ -18,20 +15,15 @@ export interface FigmaImporterConfig {
 	apiBaseUrl?: string
 }
 
-/** Result of Figma import operation. */
-export interface FigmaImporterResult {
-	tokenSet: NormalizedTokenSet
-	warnings: string[]
-	errors: string[]
-}
+export type FigmaImporterResult = ImporterResult
 
 /**
  * Imports design tokens from Figma Variables API.
- * 
+ *
  * Fetches variables and collections, normalizes them to the internal token schema,
  * and resolves alias references between variables.
  */
-export class FigmaImporter {
+export class FigmaImporter implements TokenImporter {
 	private readonly apiClient: FigmaApiClient
 	private readonly fileKey: string
 
@@ -46,10 +38,10 @@ export class FigmaImporter {
 
 	/**
 	 * Fetches and normalizes Figma variables into a token set.
-	 * 
+	 *
 	 * @throws {Error} If variables cannot be fetched (collections are optional)
 	 */
-	async ingest(): Promise<FigmaImporterResult> {
+	async ingest(): Promise<ImporterResult> {
 		const warnings: string[] = []
 		const errors: string[] = []
 
@@ -124,7 +116,13 @@ export class FigmaImporter {
 					const existingVariableId = tokenNameToVariableId.get(token.name)
 					if (existingVariableId && existingVariableId !== id) {
 						const existingVariable = variables[existingVariableId]
-						const warning = `Token name collision: Variables "${variable.name}" (${id}) and "${existingVariable?.name || existingVariableId}" (${existingVariableId}) both normalize to "${token.name}". The later variable will overwrite the earlier one.`
+						const warning = `Token name collision: Variables "${
+							variable.name
+						}" (${id}) and "${
+							existingVariable?.name || existingVariableId
+						}" (${existingVariableId}) both normalize to "${
+							token.name
+						}". The later variable will overwrite the earlier one.`
 						warnings.push(warning)
 						console.warn(warning)
 					}
@@ -132,7 +130,9 @@ export class FigmaImporter {
 					tokens[token.name] = token
 				}
 			} catch (error: unknown) {
-				const errorMessage = `Failed to normalize variable "${variable.name}" (${id}): ${error instanceof Error ? error.message : String(error)}`
+				const errorMessage = `Failed to normalize variable "${
+					variable.name
+				}" (${id}): ${error instanceof Error ? error.message : String(error)}`
 				warnings.push(errorMessage)
 				console.warn(errorMessage)
 			}
@@ -153,4 +153,3 @@ export class FigmaImporter {
 		}
 	}
 }
-

@@ -1,6 +1,11 @@
+export type { DTCGImporterConfig, DTCGImporterResult } from "./DTCGImporter";
+export { DTCGImporter } from "./DTCGImporter";
 export type { FigmaImporterConfig, FigmaImporterResult } from "./FigmaImporter";
 export { FigmaImporter } from "./FigmaImporter";
+
 export { TokenEngine } from "./TokenEngine";
+
+export type { ImporterResult, TokenImporter } from "./types/importer-types";
 
 export type {
   DTCGJsonInput,
@@ -11,10 +16,11 @@ export type {
   FigmaVariableInput,
   FigmaVariablesInput,
   FigmaVariableValueInput,
+  isDTCGInput,
+  isFigmaInput,
   TokenInputSource,
 } from "./types/input-sources";
 
-export { isDTCGInput, isFigmaInput } from "./types/input-sources";
 export type {
   BorderRadiusValue,
   ColorValue,
@@ -31,6 +37,7 @@ export type {
   TokenValueType,
   TypographyValue,
 } from "./types/token-types";
+
 // Export validation utilities
 export {
   detectCircularReferences,
