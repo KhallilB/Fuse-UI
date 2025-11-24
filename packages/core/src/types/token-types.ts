@@ -1,12 +1,7 @@
 /**
- * Token Type Definitions
- *
  * Core type definitions for the normalized token data model.
  */
 
-/**
- * Supported token types
- */
 export type TokenType =
   | "color"
   | "spacing"
@@ -18,9 +13,6 @@ export type TokenType =
   | "string"
   | "boolean";
 
-/**
- * Color value representation (RGBA, normalized 0-1)
- */
 export interface ColorValue {
   r: number; // 0-1
   g: number; // 0-1
@@ -28,17 +20,11 @@ export interface ColorValue {
   a?: number; // 0-1, optional
 }
 
-/**
- * Spacing value with unit
- */
 export interface SpacingValue {
   value: number;
   unit: "px" | "rem" | "em" | "pt";
 }
 
-/**
- * Typography value
- */
 export interface TypographyValue {
   fontFamily: string;
   fontSize: SpacingValue;
@@ -49,9 +35,6 @@ export interface TypographyValue {
   textDecoration?: "underline" | "strikethrough" | "none";
 }
 
-/**
- * Border radius value
- */
 export interface BorderRadiusValue {
   value: number;
   unit: "px" | "rem" | "em" | "%";
@@ -61,9 +44,6 @@ export interface BorderRadiusValue {
   bottomRight?: number;
 }
 
-/**
- * Shadow value
- */
 export interface ShadowValue {
   color: ColorValue;
   offsetX: number;
@@ -73,9 +53,6 @@ export interface ShadowValue {
   inset?: boolean;
 }
 
-/**
- * Union type for all possible token value types
- */
 export type TokenValueType =
   | string
   | number
@@ -86,30 +63,18 @@ export type TokenValueType =
   | BorderRadiusValue
   | ShadowValue;
 
-/**
- * Token value (concrete value)
- */
 export interface TokenValue {
   type: "value";
   value: TokenValueType;
 }
 
-/**
- * Token alias (reference to another token)
- */
 export interface TokenAlias {
   type: "alias";
   reference: string; // Dot-separated path to referenced token (e.g., "color.primary")
 }
 
-/**
- * Token value or alias
- */
 export type TokenValueOrAlias = TokenValue | TokenAlias;
 
-/**
- * Token metadata
- */
 export interface TokenMetadata {
   source: "figma" | "dtcg";
   sourceId?: string;
@@ -118,9 +83,6 @@ export interface TokenMetadata {
   [key: string]: unknown; // Allow additional metadata
 }
 
-/**
- * Normalized token representation
- */
 export interface NormalizedToken {
   id: string;
   name: string; // Dot-separated path (e.g., "color.primary")
@@ -131,9 +93,6 @@ export interface NormalizedToken {
   metadata?: TokenMetadata;
 }
 
-/**
- * Token set metadata
- */
 export interface TokenSetMetadata {
   name?: string;
   version?: string;
@@ -142,9 +101,6 @@ export interface TokenSetMetadata {
   [key: string]: unknown;
 }
 
-/**
- * Normalized token set
- */
 export interface NormalizedTokenSet {
   tokens: Record<string, NormalizedToken>;
   metadata?: TokenSetMetadata;

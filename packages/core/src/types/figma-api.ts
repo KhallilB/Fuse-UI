@@ -1,12 +1,8 @@
 /**
- * Figma API response types
- * Based on the official Figma REST API specification
+ * Figma API response types.
  * @see https://developers.figma.com/docs/rest-api/variables-endpoints/
  */
 
-/**
- * Figma Variable from API response
- */
 export interface FigmaVariable {
   id: string;
   name: string;
@@ -27,18 +23,12 @@ export interface FigmaVariable {
   updated_at: string;
 }
 
-/**
- * Figma Variable Value from API response
- */
 export interface FigmaVariableValue {
   type: "VALUE" | "ALIAS";
   value?: string | number | boolean;
   resolvedType?: "BOOLEAN" | "FLOAT" | "STRING" | "COLOR";
 }
 
-/**
- * Figma Variable Collection from API response
- */
 export interface FigmaVariableCollection {
   id: string;
   name: string;
@@ -54,27 +44,18 @@ export interface FigmaVariableCollection {
   updated_at: string;
 }
 
-/**
- * Figma Variables API response
- */
 export interface FigmaVariablesResponse {
   meta: {
     variables: Record<string, FigmaVariable>;
   };
 }
 
-/**
- * Figma Variable Collections API response
- */
 export interface FigmaVariableCollectionsResponse {
   meta: {
     variableCollections: Record<string, FigmaVariableCollection>;
   };
 }
 
-/**
- * Figma API Error response
- */
 export interface FigmaErrorResponse {
   err: string;
   status?: number;

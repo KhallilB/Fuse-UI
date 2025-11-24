@@ -1,164 +1,174 @@
 import type { ColorValue } from "../../types/token-types";
 
 /**
- * Parses a color string (hex, rgb, rgba) into a ColorValue.
+ * Parses color strings in hex, rgb, or rgba format.
+ *
+ * Note: RGB values are normalized to 0-1 range, not 0-255.
+ * Returns null for unsupported formats.
  */
 export function parseColor(colorString: string): ColorValue | null {
-	if (!colorString) {
-		return null;
-	}
+  if (!colorString) {
+    return null;
+  }
 
-	// Handle hex colors (#RRGGBB or #RRGGBBAA)
-	if (colorString.startsWith("#")) {
-		return parseHexColor(colorString);
-	}
+  // Handle hex colors (#RRGGBB or #RRGGBBAA)
+  if (colorString.startsWith("#")) {
+    return parseHexColor(colorString);
+  }
 
-	// Handle rgba colors (rgba(r, g, b, a))
-	if (colorString.startsWith("rgba(")) {
-		return parseRgbaColor(colorString);
-	}
+  // Handle rgba colors (rgba(r, g, b, a))
+  if (colorString.startsWith("rgba(")) {
+    return parseRgbaColor(colorString);
+  }
 
-	// Handle rgb colors (rgb(r, g, b))
-	if (colorString.startsWith("rgb(")) {
-		return parseRgbColor(colorString);
-	}
+  // Handle rgb colors (rgb(r, g, b))
+  if (colorString.startsWith("rgb(")) {
+    return parseRgbColor(colorString);
+  }
 
-	console.warn(`Unsupported color format: ${colorString}`);
-	return null;
+  console.warn(`Unsupported color format: ${colorString}`);
+  return null;
 }
 
 /**
- * Parses a hex color string (#RRGGBB, #RRGGBBAA, or #RGB).
+ * Parses hex color strings (#RGB, #RRGGBB, or #RRGGBBAA).
+ * Returns normalized RGBA values (0-1 range).
  */
 export function parseHexColor(hex: string): ColorValue | null {
-	// Remove # if present
-	const hexClean = hex.replace("#", "");
+  // Remove # if present
+  const hexClean = hex.replace("#", "");
 
-	// Handle 3-digit hex (#RGB -> #RRGGBB)
-	if (hexClean.length === 3) {
-		const r = parseInt((hexClean[0] ?? "") + (hexClean[0] ?? ""), 16);
-		const g = parseInt((hexClean[1] ?? "") + (hexClean[1] ?? ""), 16);
-		const b = parseInt((hexClean[2] ?? "") + (hexClean[2] ?? ""), 16);
+  // Handle 3-digit hex (#RGB -> #RRGGBB)
+  if (hexClean.length === 3) {
+    const r = parseInt((hexClean[0] ?? "") + (hexClean[0] ?? ""), 16);
+    const g = parseInt((hexClean[1] ?? "") + (hexClean[1] ?? ""), 16);
+    const b = parseInt((hexClean[2] ?? "") + (hexClean[2] ?? ""), 16);
 
-		if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-			console.warn(`Invalid hex color format: ${hex}`);
-			return null;
-		}
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+      console.warn(`Invalid hex color format: ${hex}`);
+      return null;
+    }
 
-		return {
-			r: r / 255,
-			g: g / 255,
-			b: b / 255,
-			a: 1,
-		};
-	}
+    return {
+      r: r / 255,
+      g: g / 255,
+      b: b / 255,
+      a: 1,
+    };
+  }
 
-	// Handle 6-digit hex (#RRGGBB)
-	if (hexClean.length === 6) {
-		const r = parseInt(hexClean.substring(0, 2), 16);
-		const g = parseInt(hexClean.substring(2, 4), 16);
-		const b = parseInt(hexClean.substring(4, 6), 16);
+  // Handle 6-digit hex (#RRGGBB)
+  if (hexClean.length === 6) {
+    const r = parseInt(hexClean.substring(0, 2), 16);
+    const g = parseInt(hexClean.substring(2, 4), 16);
+    const b = parseInt(hexClean.substring(4, 6), 16);
 
-		if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-			console.warn(`Invalid hex color format: ${hex}`);
-			return null;
-		}
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+      console.warn(`Invalid hex color format: ${hex}`);
+      return null;
+    }
 
-		return {
-			r: r / 255,
-			g: g / 255,
-			b: b / 255,
-			a: 1,
-		};
-	}
+    return {
+      r: r / 255,
+      g: g / 255,
+      b: b / 255,
+      a: 1,
+    };
+  }
 
-	// Handle 8-digit hex (#RRGGBBAA)
-	if (hexClean.length === 8) {
-		const r = parseInt(hexClean.substring(0, 2), 16);
-		const g = parseInt(hexClean.substring(2, 4), 16);
-		const b = parseInt(hexClean.substring(4, 6), 16);
-		const a = parseInt(hexClean.substring(6, 8), 16);
+  // Handle 8-digit hex (#RRGGBBAA)
+  if (hexClean.length === 8) {
+    const r = parseInt(hexClean.substring(0, 2), 16);
+    const g = parseInt(hexClean.substring(2, 4), 16);
+    const b = parseInt(hexClean.substring(4, 6), 16);
+    const a = parseInt(hexClean.substring(6, 8), 16);
 
-		if (
-			Number.isNaN(r) ||
-			Number.isNaN(g) ||
-			Number.isNaN(b) ||
-			Number.isNaN(a)
-		) {
-			console.warn(`Invalid hex color format: ${hex}`);
-			return null;
-		}
+    if (
+      Number.isNaN(r) ||
+      Number.isNaN(g) ||
+      Number.isNaN(b) ||
+      Number.isNaN(a)
+    ) {
+      console.warn(`Invalid hex color format: ${hex}`);
+      return null;
+    }
 
-		return {
-			r: r / 255,
-			g: g / 255,
-			b: b / 255,
-			a: a / 255,
-		};
-	}
+    return {
+      r: r / 255,
+      g: g / 255,
+      b: b / 255,
+      a: a / 255,
+    };
+  }
 
-	console.warn(`Invalid hex color format: ${hex}`);
-	return null;
+  console.warn(`Invalid hex color format: ${hex}`);
+  return null;
 }
 
 /**
- * Parses an rgba color string (rgba(r, g, b, a)).
+ * Parses rgba() color strings.
+ * Note: RGB values are normalized from 0-255 to 0-1 range.
  */
 export function parseRgbaColor(rgba: string): ColorValue | null {
-	const match = rgba.match(
-		/rgba\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i,
-	);
+  const match = rgba.match(
+    /rgba\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*(?:,\s*([\d.]+))?\s*\)/i
+  );
 
-	if (!match) {
-		console.warn(`Invalid rgba color format: ${rgba}`);
-		return null;
-	}
+  if (!match) {
+    console.warn(`Invalid rgba color format: ${rgba}`);
+    return null;
+  }
 
-	const r = Number.parseFloat(match[1] ?? "0");
-	const g = Number.parseFloat(match[2] ?? "0");
-	const b = Number.parseFloat(match[3] ?? "0");
-	const a = match[4] ? Number.parseFloat(match[4]) : 1;
+  const r = Number.parseFloat(match[1] ?? "0");
+  const g = Number.parseFloat(match[2] ?? "0");
+  const b = Number.parseFloat(match[3] ?? "0");
+  const a = match[4] ? Number.parseFloat(match[4]) : 1;
 
-	if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b) || Number.isNaN(a)) {
-		console.warn(`Invalid rgba color format: ${rgba}`);
-		return null;
-	}
+  if (
+    Number.isNaN(r) ||
+    Number.isNaN(g) ||
+    Number.isNaN(b) ||
+    Number.isNaN(a)
+  ) {
+    console.warn(`Invalid rgba color format: ${rgba}`);
+    return null;
+  }
 
-	return {
-		r: r / 255,
-		g: g / 255,
-		b: b / 255,
-		a,
-	};
+  return {
+    r: r / 255,
+    g: g / 255,
+    b: b / 255,
+    a,
+  };
 }
 
 /**
- * Parses an rgb color string (rgb(r, g, b)).
+ * Parses rgb() color strings.
+ * Note: RGB values are normalized from 0-255 to 0-1 range.
  */
 export function parseRgbColor(rgb: string): ColorValue | null {
-	const match = rgb.match(
-		/rgb\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/i,
-	);
+  const match = rgb.match(
+    /rgb\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)/i
+  );
 
-	if (!match) {
-		console.warn(`Invalid rgb color format: ${rgb}`);
-		return null;
-	}
+  if (!match) {
+    console.warn(`Invalid rgb color format: ${rgb}`);
+    return null;
+  }
 
-	const r = Number.parseFloat(match[1] ?? "0");
-	const g = Number.parseFloat(match[2] ?? "0");
-	const b = Number.parseFloat(match[3] ?? "0");
+  const r = Number.parseFloat(match[1] ?? "0");
+  const g = Number.parseFloat(match[2] ?? "0");
+  const b = Number.parseFloat(match[3] ?? "0");
 
-	if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-		console.warn(`Invalid rgb color format: ${rgb}`);
-		return null;
-	}
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+    console.warn(`Invalid rgb color format: ${rgb}`);
+    return null;
+  }
 
-	return {
-		r: r / 255,
-		g: g / 255,
-		b: b / 255,
-		a: 1,
-	};
+  return {
+    r: r / 255,
+    g: g / 255,
+    b: b / 255,
+    a: 1,
+  };
 }
-
