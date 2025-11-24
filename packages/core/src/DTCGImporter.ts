@@ -1,4 +1,4 @@
-import type { ImporterResult } from "./types/importer-types";
+import type { ImporterResult, TokenImporter } from "./types/importer-types";
 import type { DTCGTokenFile } from "./types/input-sources";
 import type { NormalizedToken, TokenSetMetadata } from "./types/token-types";
 import {
@@ -21,7 +21,7 @@ export type DTCGImporterResult = ImporterResult;
  * Supports loading from local file paths or remote URLs, validates the structure,
  * and normalizes tokens to the internal token schema.
  */
-export class DTCGImporter {
+export class DTCGImporter implements TokenImporter {
   private readonly filePath?: string;
   private readonly fileUrl?: string;
 

@@ -1,5 +1,5 @@
 import type { FigmaVariable, FigmaVariableCollection } from "./types/figma-api";
-import type { ImporterResult } from "./types/importer-types";
+import type { ImporterResult, TokenImporter } from "./types/importer-types";
 import type { NormalizedToken, TokenSetMetadata } from "./types/token-types";
 import { FigmaApiClient } from "./utils/figma/figma-api-client";
 import {
@@ -23,7 +23,7 @@ export type FigmaImporterResult = ImporterResult;
  * Fetches variables and collections, normalizes them to the internal token schema,
  * and resolves alias references between variables.
  */
-export class FigmaImporter {
+export class FigmaImporter implements TokenImporter {
   private readonly apiClient: FigmaApiClient;
   private readonly fileKey: string;
 
