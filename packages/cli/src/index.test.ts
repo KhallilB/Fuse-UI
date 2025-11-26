@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { runImportCommand } from "./import-command.js"
+import { runImportCommand } from "./import-command"
 
 vi.mock("node:fs", () => ({
 	readFileSync: vi.fn().mockReturnValue('{"version": "0.1.0"}'),
@@ -20,7 +20,7 @@ async function importCli(argv: string[]) {
 	const originalArgv = process.argv
 	process.argv = argv
 	try {
-		await import("./index.js")
+		await import("./index")
 	} finally {
 		process.argv = originalArgv
 	}
