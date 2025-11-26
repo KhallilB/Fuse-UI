@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url"
 
 import { Command } from "commander"
 
-import { runImportCommand } from "./import-command.js"
+import { runImportCommand } from "./import-command"
 
 // Get package.json for version
 const __filename = fileURLToPath(import.meta.url)
