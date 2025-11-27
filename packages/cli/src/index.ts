@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Command } from "commander"
-import { CliError, ExitCode, runImportCommand } from "./commands/import"
-import { createLogger } from "./logger"
+import { CliError, ExitCode, runImportCommand } from "./commands/import.js"
+import { createLogger } from "./logger.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

@@ -12,9 +12,9 @@ import {
 	type LoadedConfig,
 	loadConfig,
 	type TokenSourceConfig,
-} from "../config"
-import type { Logger } from "../logger"
-import { createLogger } from "../logger"
+} from "../config.js"
+import type { Logger } from "../logger.js"
+import { createLogger } from "../logger.js"
 
 export enum ExitCode {
 	Success = 0,
