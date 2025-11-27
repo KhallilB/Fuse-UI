@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { Command } from "commander"
 
+import { setupImportCommand } from "./commands/import"
 import { runImportCommand } from "./import-command.js"
-
-vi.mock("node:fs", () => ({
-	readFileSync: vi.fn().mockReturnValue('{"version": "0.1.0"}'),
-}))
 
 vi.mock("./import-command", () => ({
 	runImportCommand: vi.fn().mockResolvedValue({
@@ -16,25 +14,23 @@ vi.mock("./import-command", () => ({
 	}),
 }))
 
-async function importCli(argv: string[]) {
-	const originalArgv = process.argv
-	process.argv = argv
-	try {
-		await import("./index.js")
-	} finally {
-		process.argv = originalArgv
-	}
+async function executeCommand(program: Command, args: string[]): Promise<void> {
+	await program.parseAsync(["node", "fuseui", ...args], { from: "node" })
 }
 
 describe("fuseui import command", () => {
+	let program: Command
+
 	beforeEach(() => {
-		vi.resetModules()
+		program = new Command()
+		program.name("fuseui")
+		setupImportCommand(program)
 		vi.clearAllMocks()
 		process.exitCode = 0
 	})
 
 	it("passes file imports through to the handler", async () => {
-		await importCli(["node", "fuseui", "import", "--file", "./tokens.json"])
+		await executeCommand(program, ["import", "--file", "./tokens.json"])
 		expect(runImportCommand).toHaveBeenCalledWith({
 			figmaFileId: undefined,
 			dtcgFilePath: "./tokens.json",
@@ -43,7 +39,7 @@ describe("fuseui import command", () => {
 	})
 
 	it("passes figma imports through to the handler", async () => {
-		await importCli(["node", "fuseui", "import", "--figma", "ABC123"])
+		await executeCommand(program, ["import", "--figma", "ABC123"])
 		expect(runImportCommand).toHaveBeenCalledWith({
 			figmaFileId: "ABC123",
 			dtcgFilePath: undefined,
@@ -56,9 +52,7 @@ describe("fuseui import command", () => {
 			.spyOn(console, "error")
 			.mockImplementation(() => undefined)
 
-		await importCli([
-			"node",
-			"fuseui",
+		await executeCommand(program, [
 			"import",
 			"--figma",
 			"ABC123",
