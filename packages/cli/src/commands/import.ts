@@ -1,14 +1,64 @@
-import { TokenEngine } from "@fuseui-org/core"
 import type { Command } from "commander"
+import { runImportCommand } from "../import-command.js"
 
 export function setupImportCommand(program: Command): void {
 	program
 		.command("import")
-		.description("Import design tokens from various sources")
-		.action(() => {
-			console.log("Import functionality will be implemented here")
-			// Test that imports work
-			const _engine = new TokenEngine()
-			console.log("TokenEngine imported successfully", _engine)
-		})
+		.description(
+			"Ingest design tokens from Figma or a local JSON file and store them in .fuseui/tokens.json",
+		)
+		.option(
+			"--figma <fileId>",
+			"Import from Figma Variables API (prompts for PAT)",
+		)
+		.option("--file <path>", "Import from a local DTCG/JSON token file")
+		.option(
+			"--output <path>",
+			"Override output location (defaults to .fuseui/tokens.json)",
+		)
+		.action(
+			async (options: { figma?: string; file?: string; output?: string }) => {
+				const hasFigma = Boolean(options.figma)
+				const hasFile = Boolean(options.file)
+				if ((hasFigma && hasFile) || (!hasFigma && !hasFile)) {
+					console.error(
+						"Please provide exactly one source: --figma <fileId> or --file <path>",
+					)
+					process.exitCode = 1
+					return
+				}
+
+				try {
+					const result = await runImportCommand({
+						figmaFileId: options.figma,
+						dtcgFilePath: options.file,
+						outputFile: options.output,
+					})
+
+					console.log(
+						`Imported ${result.tokenCount} tokens from ${result.sourceDescription}`,
+					)
+					console.log(`Saved normalized tokens to ${result.outputPath}`)
+
+					if (result.warnings.length > 0) {
+						console.warn("Warnings:")
+						for (const warning of result.warnings) {
+							console.warn(`- ${warning}`)
+						}
+					}
+
+					if (result.errors.length > 0) {
+						console.warn("Non-blocking errors:")
+						for (const error of result.errors) {
+							console.warn(`- ${error}`)
+						}
+					}
+				} catch (error) {
+					const message =
+						error instanceof Error ? error.message : "Unknown import failure"
+					console.error(`Import failed: ${message}`)
+					process.exitCode = 1
+				}
+			},
+		)
 }

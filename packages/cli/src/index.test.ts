@@ -1,53 +1,68 @@
-import { Command } from "commander";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { Command } from "commander"
 
-// Mock the commander package
-vi.mock("commander", () => {
-  const mockCommand = {
-    name: vi.fn().mockReturnThis(),
-    description: vi.fn().mockReturnThis(),
-    version: vi.fn().mockReturnThis(),
-    command: vi.fn().mockReturnThis(),
-    action: vi.fn().mockReturnThis(),
-    parse: vi.fn(),
-    outputHelp: vi.fn(),
-  };
+import { setupImportCommand } from "./commands/import"
+import { runImportCommand } from "./import-command.js"
 
-  return {
-    Command: vi.fn(() => mockCommand),
-  };
-});
+vi.mock("./import-command", () => ({
+	runImportCommand: vi.fn().mockResolvedValue({
+		outputPath: "/tmp/.fuseui/tokens.json",
+		tokenCount: 12,
+		warnings: [],
+		errors: [],
+		sourceDescription: "mock source",
+	}),
+}))
 
-// Mock the fs module
-vi.mock("node:fs", () => ({
-  readFileSync: vi.fn().mockReturnValue('{"version": "0.1.0"}'),
-}));
+async function executeCommand(program: Command, args: string[]): Promise<void> {
+	await program.parseAsync(["node", "fuseui", ...args], { from: "node" })
+}
 
-describe("CLI", () => {
-  it("should initialize properly", async () => {
-    // Import the CLI module (which will use our mocks)
-    const originalArgv = process.argv;
-    process.argv = ["node", "fuseui"];
+describe("fuseui import command", () => {
+	let program: Command
 
-    // We need to reset the module cache to ensure our mocks are used
-    vi.resetModules();
+	beforeEach(() => {
+		program = new Command()
+		program.name("fuseui")
+		setupImportCommand(program)
+		vi.clearAllMocks()
+		process.exitCode = 0
+	})
 
-    // Import the CLI module
-    await import("./index.js");
+	it("passes file imports through to the handler", async () => {
+		await executeCommand(program, ["import", "--file", "./tokens.json"])
+		expect(runImportCommand).toHaveBeenCalledWith({
+			figmaFileId: undefined,
+			dtcgFilePath: "./tokens.json",
+			outputFile: undefined,
+		})
+	})
 
-    // Get the mocked Command instance
-    const commandInstance = new Command();
+	it("passes figma imports through to the handler", async () => {
+		await executeCommand(program, ["import", "--figma", "ABC123"])
+		expect(runImportCommand).toHaveBeenCalledWith({
+			figmaFileId: "ABC123",
+			dtcgFilePath: undefined,
+			outputFile: undefined,
+		})
+	})
 
-    // Verify the CLI was initialized correctly
-    expect(commandInstance.name).toHaveBeenCalledWith("fuseui");
-    expect(commandInstance.description).toHaveBeenCalledWith(
-      expect.stringContaining("FuseUI CLI")
-    );
-    expect(commandInstance.version).toHaveBeenCalledWith("0.1.0");
-    expect(commandInstance.command).toHaveBeenCalledWith("tokens");
-    expect(commandInstance.command).toHaveBeenCalledWith("generate");
+	it("sets exit code when both options are provided", async () => {
+		const errorSpy = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => undefined)
 
-    // Restore original argv
-    process.argv = originalArgv;
-  });
-});
+		await executeCommand(program, [
+			"import",
+			"--figma",
+			"ABC123",
+			"--file",
+			"tokens.json",
+		])
+
+		expect(runImportCommand).not.toHaveBeenCalled()
+		expect(process.exitCode).toBe(1)
+
+		errorSpy.mockRestore()
+	})
+})
