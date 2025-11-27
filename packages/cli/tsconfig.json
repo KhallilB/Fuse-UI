@@ -4,11 +4,7 @@
 		"outDir": "dist",
 		"rootDir": "src",
 		"module": "ESNext",
-		"moduleResolution": "Bundler",
-		"paths": {
-			"@fuseui-org/core": ["../core/dist/index.d.ts"],
-			"@fuseui-org/core/*": ["../core/dist/*"]
-		}
+		"moduleResolution": "bundler"
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
