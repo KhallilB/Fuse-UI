@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Command } from "commander"
-import { setupImportCommand } from "./commands/import"
+import { setupImportCommand } from "./commands/import.js"
 
 // Get package.json for version
 const __filename = fileURLToPath(import.meta.url)
