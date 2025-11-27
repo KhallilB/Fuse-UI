@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Command } from "commander"
-import { runImportCommand, ExitCode, CliError } from "./commands/import"
+import { CliError, ExitCode, runImportCommand } from "./commands/import"
 import { createLogger } from "./logger"
 
 const __filename = fileURLToPath(import.meta.url)
@@ -45,7 +45,7 @@ program
 				logger,
 			})
 			process.exitCode = exitCode
-		} catch (error) {
+		} catch (error: unknown) {
 			const exitCode = handleError(error, logger, debugEnabled)
 			process.exitCode = exitCode
 		}
@@ -65,7 +65,7 @@ program
 		console.log("Code generation functionality will be implemented here")
 	})
 
-program.parseAsync(process.argv).catch((error) => {
+program.parseAsync(process.argv).catch((error: unknown) => {
 	const logger = createLogger()
 	const exitCode = handleError(error, logger, false)
 	process.exitCode = exitCode

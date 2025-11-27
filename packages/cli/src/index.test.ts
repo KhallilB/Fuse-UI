@@ -40,7 +40,7 @@ describe("CLI", () => {
 		vi.resetModules()
 
 		// Import the CLI module
-		await import("./index.js")
+		await import("./index")
 
 		// Get the mocked Command instance
 		const commandInstance = new Command()
