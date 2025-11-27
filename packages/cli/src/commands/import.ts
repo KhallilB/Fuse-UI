@@ -10,7 +10,11 @@ import {
 import type { Logger } from "../logger"
 import { createLogger } from "../logger"
 import { DTCGImporter, FigmaImporter } from "@fuseui-org/core"
-import type { ImporterResult, TokenImporter } from "@fuseui-org/core"
+import type {
+	ImporterResult,
+	TokenImporter,
+	NormalizedToken,
+} from "@fuseui-org/core"
 
 export enum ExitCode {
 	Success = 0,
@@ -91,11 +95,11 @@ export async function runImportCommand(
 			cwd: options.cwd,
 			explicitPath: configPath,
 		})
-	} catch (error) {
+	} catch (error: unknown) {
 		if (error instanceof ConfigError) {
 			throw new CliError(error.message, ExitCode.Validation)
 		}
-		throw error
+		throw toError(error)
 	}
 
 	const config = loadedConfig?.config ?? {}
@@ -130,7 +134,7 @@ export async function runImportCommand(
 		let result: ImporterResult
 		try {
 			result = await importer.ingest()
-		} catch (error) {
+		} catch (error: unknown) {
 			const reason = error instanceof Error ? error.message : String(error)
 			throw new CliError(
 				`Failed to import tokens from ${sourceLabel}: ${reason}`,
@@ -327,11 +331,14 @@ function reportResult(
 	sourceLabel: string,
 	result: ImporterResult,
 ): void {
-	const tokens = result.tokenSet.tokens ?? {}
+	const tokens = (result.tokenSet.tokens ?? {}) as Record<
+		string,
+		NormalizedToken
+	>
 	const tokenCount = Object.keys(tokens).length
 	const tokenTypes = new Set(
 		Object.values(tokens)
-			.map((token) => token.type)
+			.map((token) => (token as NormalizedToken).type)
 			.filter(Boolean),
 	)
 
@@ -360,16 +367,18 @@ function reportResult(
 function describeSource(source: TokenSourceConfig): string {
 	const label = source.label ? ` (${source.label})` : ""
 
-	if (source.type === "dtcg") {
-		const location = source.filePath ?? source.fileUrl ?? "unspecified path"
-		return `DTCG${label} - ${location}`
+	switch (source.type) {
+		case "dtcg": {
+			const location = source.filePath ?? source.fileUrl ?? "unspecified path"
+			return `DTCG${label} - ${location}`
+		}
+		case "figma":
+			return `Figma${label} - file ${source.fileKey}`
+		default: {
+			const fallback = source as TokenSourceConfig
+			return `${fallback.type ?? "unknown"}${label}`
+		}
 	}
-
-	if (source.type === "figma") {
-		return `Figma${label} - file ${source.fileKey}`
-	}
-
-	return `${source.type}${label}`
 }
 
 type EnvOverrides = {
@@ -400,4 +409,8 @@ function coerceBoolean(value?: string): boolean | undefined {
 	}
 
 	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
+}
+
+function toError(error: unknown): Error {
+	return error instanceof Error ? error : new Error(String(error))
 }
