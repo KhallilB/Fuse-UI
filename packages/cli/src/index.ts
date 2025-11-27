@@ -1,8 +1,7 @@
-#!/usr/bin/env node
-
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
+
 import { Command } from "commander"
 import { setupImportCommand } from "./commands/import"
 
@@ -19,8 +18,9 @@ program
 	.description("FuseUI CLI - A token-first, adapter-driven release engine")
 	.version(packageJson.version)
 
-// Add import command (testing imports without .js extension)
+// Register commands
 setupImportCommand(program)
+// Future commands: setupTokensCommand(program), setupGenerateCommand(program)
 
 // Add a placeholder subcommand
 program

@@ -21,18 +21,25 @@ npm install --save-dev @fuseui-org/cli
 ## Usage
 
 ```bash
-# Show help
+# Show help and version
 fuseui --help
-
-# Show version
 fuseui --version
 
-# Manage design tokens
-fuseui tokens
+# Import tokens from the Figma Variables API (prompts for a PAT)
+fuseui import --figma <FILE_ID>
 
-# Generate code from design tokens
-fuseui generate
+# Import tokens from a local DTCG/JSON file
+fuseui import --file path/to/tokens.json
+
+# Override the default output path (.fuseui/tokens.json)
+fuseui import --file path/to/tokens.json --output ./my-tokens.json
 ```
+
+### Import command details
+
+- Normalized tokens are written to `.fuseui/tokens.json` relative to the current working directory unless `--output` is supplied.
+- When using `--figma`, the CLI prompts for a Figma Personal Access Token; set `FIGMA_ACCESS_TOKEN` or `FIGMA_PERSONAL_ACCESS_TOKEN` to skip the prompt.
+- The command prints the number of processed tokens plus any warnings or non-blocking errors so downstream tooling can verify ingestion health.
 
 ## Development
 
