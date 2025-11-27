@@ -1,38 +1,38 @@
 {
-  "$schema": "https://turborepo.com/schema.json",
-  "ui": "tui",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "inputs": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "format-and-lint": {},
-    "format-and-lint:fix": {
-      "cache": false
-    },
-    "server#build": {
-      "dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
-    },
-    "web#build": {
-      "dependsOn": ["@fuseui-org/sdk#build"]
-    },
-    "@fuseui-org/cli#build": {
-      "dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
-    }
-  }
+	"$schema": "https://turborepo.com/schema.json",
+	"ui": "tui",
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": [".next/**", "!.next/cache/**", "dist/**"]
+		},
+		"test": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"]
+		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
+		"check-types": {
+			"dependsOn": ["^build"]
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"format-and-lint": {},
+		"format-and-lint:fix": {
+			"cache": false
+		},
+		"server#build": {
+			"dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
+		},
+		"web#build": {
+			"dependsOn": ["@fuseui-org/sdk#build"]
+		},
+		"@fuseui-org/cli#build": {
+			"dependsOn": ["@fuseui-org/core#build", "@fuseui-org/sdk#build"]
+		}
+	}
 }

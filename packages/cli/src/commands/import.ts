@@ -1,20 +1,20 @@
+import type {
+	ImporterResult,
+	NormalizedToken,
+	TokenImporter,
+} from "@fuseui-org/core"
+import { DTCGImporter, FigmaImporter } from "@fuseui-org/core"
 import {
+	ConfigError,
 	type DTCGSourceConfig,
 	type FigmaSourceConfig,
 	type FuseUIConfig,
 	type LoadedConfig,
-	type TokenSourceConfig,
 	loadConfig,
-	ConfigError,
+	type TokenSourceConfig,
 } from "../config"
 import type { Logger } from "../logger"
 import { createLogger } from "../logger"
-import { DTCGImporter, FigmaImporter } from "@fuseui-org/core"
-import type {
-	ImporterResult,
-	TokenImporter,
-	NormalizedToken,
-} from "@fuseui-org/core"
 
 export enum ExitCode {
 	Success = 0,
@@ -199,7 +199,11 @@ function applyDefaults(
 
 		if (!apiKey) {
 			throw new CliError(
-				`Missing Figma API key for source "${source.label ?? source.fileKey}". Provide it via config, --figma-api-key, or ${ENV_KEYS.figmaApiKey}.`,
+				`Missing Figma API key for source "${
+					source.label ?? source.fileKey
+				}". Provide it via config, --figma-api-key, or ${
+					ENV_KEYS.figmaApiKey
+				}.`,
 				ExitCode.Validation,
 			)
 		}
@@ -222,7 +226,9 @@ function applyDefaults(
 
 		if (!filePath && !fileUrl) {
 			throw new CliError(
-				`Missing DTCG source location for "${source.label ?? "dtcg"}". Provide filePath/fileUrl in config or via --dtcg-path/--dtcg-url.`,
+				`Missing DTCG source location for "${
+					source.label ?? "dtcg"
+				}". Provide filePath/fileUrl in config or via --dtcg-path/--dtcg-url.`,
 				ExitCode.Validation,
 			)
 		}
@@ -343,7 +349,9 @@ function reportResult(
 	)
 
 	logger.info(
-		`Imported ${tokenCount} token${tokenCount === 1 ? "" : "s"} from ${sourceLabel}.`,
+		`Imported ${tokenCount} token${
+			tokenCount === 1 ? "" : "s"
+		} from ${sourceLabel}.`,
 	)
 	logger.info(
 		`Token types: ${
