@@ -1,68 +1,91 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
 import { Command } from "commander"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { setupImportCommand } from "./commands/import"
-import { runImportCommand } from "./import-command.js"
+import type { ImportCommandOptions } from "./commands/import"
+import { ExitCode, setupImportCommand } from "./commands/import"
 
-vi.mock("./import-command", () => ({
-	runImportCommand: vi.fn().mockResolvedValue({
-		outputPath: "/tmp/.fuseui/tokens.json",
-		tokenCount: 12,
-		warnings: [],
-		errors: [],
-		sourceDescription: "mock source",
-	}),
+const createLoggerMock = vi.hoisted(() => vi.fn())
+
+vi.mock("./logger.js", () => ({
+	createLogger: createLoggerMock,
 }))
 
-async function executeCommand(program: Command, args: string[]): Promise<void> {
+const runImportCommandMock = vi.fn<
+	(options: ImportCommandOptions) => Promise<ExitCode>
+>(async () => ExitCode.Success)
+
+const createLoggerStub = () => ({
+	info: vi.fn(),
+	warn: vi.fn(),
+	error: vi.fn(),
+	debug: vi.fn(),
+})
+
+async function executeImportCommand(args: string[]): Promise<void> {
+	const program = new Command()
+	program.name("fuseui")
+	setupImportCommand(program, { runImport: runImportCommandMock })
 	await program.parseAsync(["node", "fuseui", ...args], { from: "node" })
 }
 
-describe("fuseui import command", () => {
-	let program: Command
+describe("fuseui import CLI wiring", () => {
+	let logger: ReturnType<typeof createLoggerStub>
 
 	beforeEach(() => {
-		program = new Command()
-		program.name("fuseui")
-		setupImportCommand(program)
-		vi.clearAllMocks()
-		process.exitCode = 0
+		logger = createLoggerStub()
+		createLoggerMock.mockClear()
+		createLoggerMock.mockImplementation(() => logger)
+		runImportCommandMock.mockClear()
+		runImportCommandMock.mockResolvedValue(ExitCode.Success)
+		process.exitCode = undefined
 	})
 
-	it("passes file imports through to the handler", async () => {
-		await executeCommand(program, ["import", "--file", "./tokens.json"])
-		expect(runImportCommand).toHaveBeenCalledWith({
-			figmaFileId: undefined,
-			dtcgFilePath: "./tokens.json",
-			outputFile: undefined,
-		})
+	it("passes DTCG imports through to runImportCommand", async () => {
+		await executeImportCommand(["import", "--dtcg-path", "./tokens.json"])
+
+		expect(runImportCommandMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				dtcgPath: "./tokens.json",
+				debug: false,
+			}),
+		)
+		expect(process.exitCode).toBe(ExitCode.Success)
 	})
 
-	it("passes figma imports through to the handler", async () => {
-		await executeCommand(program, ["import", "--figma", "ABC123"])
-		expect(runImportCommand).toHaveBeenCalledWith({
-			figmaFileId: "ABC123",
-			dtcgFilePath: undefined,
-			outputFile: undefined,
-		})
-	})
-
-	it("sets exit code when both options are provided", async () => {
-		const errorSpy = vi
-			.spyOn(console, "error")
-			.mockImplementation(() => undefined)
-
-		await executeCommand(program, [
+	it("passes Figma imports through to runImportCommand", async () => {
+		await executeImportCommand([
 			"import",
-			"--figma",
+			"--figma-file-key",
 			"ABC123",
-			"--file",
-			"tokens.json",
+			"--figma-api-key",
+			"secret",
 		])
 
-		expect(runImportCommand).not.toHaveBeenCalled()
-		expect(process.exitCode).toBe(1)
+		expect(runImportCommandMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				figmaFileKey: "ABC123",
+				figmaApiKey: "secret",
+				debug: false,
+			}),
+		)
+		expect(process.exitCode).toBe(ExitCode.Success)
+	})
 
-		errorSpy.mockRestore()
+	it("sets validation exit code when conflicting CLI sources are provided", async () => {
+		await executeImportCommand([
+			"import",
+			"--dtcg-path",
+			"./tokens.json",
+			"--figma-file-key",
+			"ABC123",
+			"--figma-api-key",
+			"secret",
+		])
+
+		expect(runImportCommandMock).not.toHaveBeenCalled()
+		expect(logger.error).toHaveBeenCalledWith(
+			"Provide either Figma overrides or DTCG overrides, not both at once.",
+		)
+		expect(process.exitCode).toBe(ExitCode.Validation)
 	})
 })

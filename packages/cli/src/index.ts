@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
-
 import { Command } from "commander"
-import { setupImportCommand } from "./commands/import"
 
-// Get package.json for version
+import { handleCliError, setupImportCommand } from "./commands/import.js"
+import { createLogger } from "./logger.js"
+import { isTruthy } from "./utils/boolean.js"
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const packageJsonPath = join(__dirname, "..", "package.json")
@@ -18,11 +19,10 @@ program
 	.description("FuseUI CLI - A token-first, adapter-driven release engine")
 	.version(packageJson.version)
 
-// Register commands
-setupImportCommand(program)
-// Future commands: setupTokensCommand(program), setupGenerateCommand(program)
+program.option("--debug", "Enable verbose logging")
 
-// Add a placeholder subcommand
+setupImportCommand(program)
+
 program
 	.command("tokens")
 	.description("Manage design tokens")
@@ -30,7 +30,6 @@ program
 		console.log("Token management functionality will be implemented here")
 	})
 
-// Add another placeholder subcommand
 program
 	.command("generate")
 	.description("Generate code from design tokens")
@@ -38,9 +37,9 @@ program
 		console.log("Code generation functionality will be implemented here")
 	})
 
-program.parse(process.argv)
-
-// If no command is provided, show help
-if (!process.argv.slice(2).length) {
-	program.outputHelp()
-}
+program.parseAsync(process.argv).catch((error: unknown) => {
+	const debugEnabled = isTruthy(process.env.FUSEUI_DEBUG)
+	const logger = createLogger({ debug: debugEnabled })
+	const exitCode = handleCliError(error, logger, debugEnabled)
+	process.exitCode = exitCode
+})
