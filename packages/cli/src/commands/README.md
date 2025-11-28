@@ -8,17 +8,17 @@ Each command module should:
 
 1. Export a `setup<Name>Command(program: Command)` function
 2. Define the command, its options, and action handler
-3. Keep business logic in separate modules (e.g., `import-command.ts`)
+3. Export business logic functions (e.g., `runImportCommand`) for testability
+4. Keep command setup and business logic in the same file (pragmatic for this complexity)
 
 ## Structure
 
-```
+```text
 commands/
-  ├── import.ts          # Command definition and setup
+  ├── import.ts          # Command setup + business logic
   └── README.md          # This file
 
 src/
-  ├── import-command.ts  # Business logic for import command
   └── index.ts           # Main entry point that registers all commands
 ```
 
@@ -27,40 +27,51 @@ src/
 The `import` command demonstrates the pattern:
 
 ```typescript
-import type { Command } from "commander"
-import { runImportCommand } from "../import-command.js"
+import type { Command } from "commander";
+import { createLogger } from "../logger.js";
 
-export function setupImportCommand(program: Command): void {
+// Export business logic for testability
+export async function runImportCommand(
+  options: ImportCommandOptions = {}
+): Promise<ExitCode> {
+  const logger = createLogger({ debug: options.debug });
+  // ... business logic ...
+  return ExitCode.Success;
+}
+
+// Export command setup function
+export function setupImportCommand(
+  program: Command,
+  deps: { runImport?: ImportCommandRunner } = {}
+): void {
+  const runImport = deps.runImport ?? runImportCommand;
+
   program
     .command("import")
-    .description("Ingest design tokens from Figma or a local JSON file")
-    .option("--figma <fileId>", "Import from Figma Variables API")
-    .option("--file <path>", "Import from a local DTCG/JSON token file")
-    .option("--output <path>", "Override output location")
-    .action(async (options) => {
+    .description("Ingest design tokens from configured sources")
+    .option("--dtcg-path <path>", "Override DTCG file path")
+    .option("--figma-file-key <key>", "Override Figma file key")
+    .action(async (commandOptions, command) => {
+      const logger = createLogger({ debug: globalOptions.debug });
+
       // Validation
-      const hasFigma = Boolean(options.figma)
-      const hasFile = Boolean(options.file)
-      if ((hasFigma && hasFile) || (!hasFigma && !hasFile)) {
-        console.error("Please provide exactly one source...")
-        process.exitCode = 1
-        return
+      if (hasConflictingCliSources(commandOptions)) {
+        logger.error("Provide either Figma or DTCG overrides, not both.");
+        process.exitCode = ExitCode.Validation;
+        return;
       }
 
-      // Business logic (delegated to separate module)
+      // Business logic (can be injected for testing)
       try {
-        const result = await runImportCommand({
-          figmaFileId: options.figma,
-          dtcgFilePath: options.file,
-          outputFile: options.output,
-        })
-        // Handle success
+        const exitCode = await runImport({
+          ...commandOptions,
+          logger,
+        });
+        process.exitCode = exitCode;
       } catch (error) {
-        // Handle errors
-        console.error(`Import failed: ${error.message}`)
-        process.exitCode = 1
+        process.exitCode = handleCliError(error, logger, debugEnabled);
       }
-    })
+    });
 }
 ```
 
@@ -70,7 +81,7 @@ Commands are registered in `src/index.ts`:
 
 ```typescript
 // Register commands
-setupImportCommand(program)
+setupImportCommand(program);
 // Future commands: setupTokensCommand(program), setupGenerateCommand(program)
 ```
 
@@ -102,11 +113,12 @@ setupImportCommand(program)
 - Always set `process.exitCode` on errors
 - Log warnings and non-blocking errors separately from fatal errors
 
-### Business Logic Separation
+### Business Logic Organization
 
-- Keep command setup (options, validation) in `commands/<name>.ts`
-- Keep business logic in separate modules (e.g., `import-command.ts`)
-- This separation makes business logic testable independently
+- Keep command setup and business logic in `commands/<name>.ts`
+- Export business logic functions (e.g., `runImportCommand`) for testability
+- Use dependency injection for testability (e.g., inject `runImport` function)
+- For complex commands, consider extracting helpers to separate files only when needed
 
 ### User Feedback
 
@@ -120,45 +132,55 @@ setupImportCommand(program)
 Commands should be tested using isolated command instances:
 
 ```typescript
-import { Command } from "commander"
-import { setupImportCommand } from "./commands/import"
+import { Command } from "commander";
+import { setupImportCommand } from "./commands/import";
 
 describe("import command", () => {
-  let program: Command
+  let program: Command;
 
   beforeEach(() => {
-    program = new Command()
-    program.name("fuseui")
-    setupImportCommand(program)
-  })
+    program = new Command();
+    program.name("fuseui");
+    setupImportCommand(program);
+  });
 
   it("handles file imports", async () => {
-    await program.parseAsync(["node", "fuseui", "import", "--file", "./tokens.json"])
+    await program.parseAsync([
+      "node",
+      "fuseui",
+      "import",
+      "--file",
+      "./tokens.json",
+    ]);
     // Assertions...
-  })
-})
+  });
+});
 ```
 
 ### Testing Guidelines
 
 - Create isolated `Command` instances for each test
-- Mock business logic modules (e.g., `runImportCommand`)
+- Use dependency injection to mock business logic (e.g., inject `runImport` mock)
 - Test validation logic separately from business logic
 - Test error handling and edge cases
 - Avoid importing the main `index.ts` module in tests (causes side effects)
 
 ## Adding a New Command
 
-1. Create `commands/<name>.ts` with `setup<Name>Command()` function
-2. Create business logic module if needed (e.g., `<name>-command.ts`)
-3. Register the command in `src/index.ts`:
+1. Create `commands/<name>.ts` with:
+   - `setup<Name>Command(program: Command)` function for command registration
+   - Business logic functions (e.g., `run<Name>Command()`) exported for testability
+2. Register the command in `src/index.ts`:
+
    ```typescript
    import { setup<Name>Command } from "./commands/<name>"
-   
+
    // In registration section:
    setup<Name>Command(program)
    ```
-4. Write tests in `index.test.ts` or a separate test file
+
+3. Write tests in `index.test.ts` or a separate test file
+4. Use dependency injection for testability (inject business logic functions)
 5. Update this README if the pattern changes
 
 ## Future Commands
@@ -167,4 +189,3 @@ Commands planned for future implementation:
 
 - `tokens` - Manage design tokens (list, validate, etc.)
 - `generate` - Generate code from design tokens
-

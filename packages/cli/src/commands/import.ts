@@ -1,12 +1,9 @@
 import type {
 	ImporterResult,
 	NormalizedToken,
-	NormalizedTokenSet,
 	TokenImporter,
-	TokenSetMetadata,
 } from "@fuseui-org/core"
 import { DTCGImporter, FigmaImporter } from "@fuseui-org/core"
-import { FuseClient } from "@fuseui-org/sdk"
 import type { Command } from "commander"
 import {
 	ConfigError,
@@ -35,9 +32,6 @@ export interface ImportCommandOptions {
 	figmaApiKey?: string
 	figmaFileKey?: string
 	figmaBaseUrl?: string
-	push?: boolean
-	fuseApiKey?: string
-	fuseApiUrl?: string
 	env?: NodeJS.ProcessEnv
 	cwd?: string
 	logger?: Logger
@@ -93,8 +87,6 @@ const ENV_KEYS = {
 	dtcgPath: "FUSEUI_DTCG_FILE_PATH",
 	dtcgUrl: "FUSEUI_DTCG_FILE_URL",
 	debug: "FUSEUI_DEBUG",
-	fuseApiKey: "FUSEUI_API_KEY",
-	fuseApiUrl: "FUSEUI_API_URL",
 }
 
 export async function runImportCommand(
@@ -143,7 +135,6 @@ export async function runImportCommand(
 	}
 
 	let exitCode: ExitCode = ExitCode.Success
-	const tokenSets: NormalizedTokenSet[] = []
 
 	for (const source of sources) {
 		const sourceLabel = describeSource(source)
@@ -164,17 +155,9 @@ export async function runImportCommand(
 		}
 
 		reportResult(logger, sourceLabel, result)
-		tokenSets.push(result.tokenSet)
 
 		if (result.errors.length > 0) {
 			exitCode = ExitCode.Validation
-		}
-	}
-
-	if (options.push && tokenSets.length > 0) {
-		const pushExitCode = await pushTokenSets(tokenSets, options, logger)
-		if (pushExitCode !== ExitCode.Success) {
-			exitCode = pushExitCode
 		}
 	}
 
@@ -197,9 +180,6 @@ export function setupImportCommand(
 		.option("--figma-api-key <key>", "Override Figma API key")
 		.option("--figma-file-key <fileKey>", "Override Figma file key")
 		.option("--figma-base-url <url>", "Override Figma API base URL")
-		.option("--push", "Push imported tokens to Fuse API")
-		.option("--fuse-api-key <key>", "Fuse API key for push (or FUSEUI_API_KEY)")
-		.option("--fuse-api-url <url>", "Fuse API base URL (or FUSEUI_API_URL)")
 		.action(async (commandOptions: ImportCommandOptions, command: Command) => {
 			const globalOptions =
 				typeof command.optsWithGlobals === "function"
@@ -499,8 +479,6 @@ type EnvOverrides = {
 	dtcgPath?: string
 	dtcgUrl?: string
 	debug?: boolean
-	fuseApiKey?: string
-	fuseApiUrl?: string
 }
 
 function readEnv(env: NodeJS.ProcessEnv): EnvOverrides {
@@ -512,79 +490,6 @@ function readEnv(env: NodeJS.ProcessEnv): EnvOverrides {
 		dtcgPath: env[ENV_KEYS.dtcgPath],
 		dtcgUrl: env[ENV_KEYS.dtcgUrl],
 		debug: coerceBoolean(env[ENV_KEYS.debug]),
-		fuseApiKey: env[ENV_KEYS.fuseApiKey],
-		fuseApiUrl: env[ENV_KEYS.fuseApiUrl],
-	}
-}
-
-async function pushTokenSets(
-	tokenSets: NormalizedTokenSet[],
-	options: ImportCommandOptions,
-	logger: Logger,
-): Promise<ExitCode> {
-	const env = options.env ?? process.env
-	const envOverrides = readEnv(env)
-
-	const apiKey = options.fuseApiKey ?? envOverrides.fuseApiKey
-	if (!apiKey) {
-		throw new CliError(
-			"Missing Fuse API key for push. Provide --fuse-api-key or set FUSEUI_API_KEY.",
-			ExitCode.Validation,
-		)
-	}
-
-	const apiUrl = options.fuseApiUrl ?? envOverrides.fuseApiUrl
-	const client = new FuseClient({
-		apiKey,
-		baseUrl: apiUrl,
-	})
-
-	const mergedTokenSet = mergeTokenSets(tokenSets)
-	const tokenCount = Object.keys(mergedTokenSet.tokens).length
-
-	logger.info(
-		`Pushing ${tokenCount} token${tokenCount === 1 ? "" : "s"} to Fuse API...`,
-	)
-
-	try {
-		const result = await client.pushTokens(mergedTokenSet)
-		logger.info(
-			`Successfully pushed tokens to Fuse API: ${result.message} (${result.tokenCount} tokens)`,
-		)
-		return ExitCode.Success
-	} catch (error: unknown) {
-		const reason = error instanceof Error ? error.message : String(error)
-		throw new CliError(
-			`Failed to push tokens to Fuse API: ${reason}`,
-			ExitCode.Fatal,
-			error,
-		)
-	}
-}
-
-function mergeTokenSets(tokenSets: NormalizedTokenSet[]): NormalizedTokenSet {
-	if (tokenSets.length === 0) {
-		return { tokens: {} }
-	}
-
-	if (tokenSets.length === 1) {
-		return tokenSets[0] ?? { tokens: {} }
-	}
-
-	const mergedTokens: Record<string, NormalizedToken> = {}
-	const mergedMetadata: TokenSetMetadata = {}
-
-	for (const tokenSet of tokenSets) {
-		Object.assign(mergedTokens, tokenSet.tokens)
-		if (tokenSet.metadata) {
-			Object.assign(mergedMetadata, tokenSet.metadata)
-		}
-	}
-
-	return {
-		tokens: mergedTokens,
-		metadata:
-			Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
 	}
 }
 
