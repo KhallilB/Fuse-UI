@@ -13,9 +13,10 @@ import {
 	type LoadedConfig,
 	loadConfig,
 	type TokenSourceConfig,
-} from "../config.js"
-import type { Logger } from "../logger.js"
-import { createLogger } from "../logger.js"
+} from "../config"
+import type { Logger } from "../logger"
+import { createLogger } from "../logger"
+import { coerceBoolean, isTruthy } from "../utils/boolean"
 
 export enum ExitCode {
 	Success = 0,
@@ -191,7 +192,8 @@ export function setupImportCommand(
 			)
 			const logger = createLogger({ debug: debugEnabled })
 
-			if (hasConflictingCliSources(commandOptions)) {
+			const envOverrides = readEnv(process.env)
+			if (hasConflictingCliSources(commandOptions, envOverrides)) {
 				logger.error(
 					"Provide either Figma overrides or DTCG overrides, not both at once.",
 				)
@@ -493,25 +495,20 @@ function readEnv(env: NodeJS.ProcessEnv): EnvOverrides {
 	}
 }
 
-function coerceBoolean(value?: string): boolean | undefined {
-	if (value === undefined) {
-		return undefined
-	}
-
-	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
-}
-
-function hasConflictingCliSources(options: ImportCommandOptions): boolean {
-	const hasFigma = Boolean(options.figmaFileKey ?? options.figmaApiKey)
-	const hasDtcg = Boolean(options.dtcgPath ?? options.dtcgUrl)
+function hasConflictingCliSources(
+	options: ImportCommandOptions,
+	env: EnvOverrides,
+): boolean {
+	const hasFigma = Boolean(
+		options.figmaFileKey ??
+			options.figmaApiKey ??
+			env.figmaFileKey ??
+			env.figmaApiKey,
+	)
+	const hasDtcg = Boolean(
+		options.dtcgPath ?? options.dtcgUrl ?? env.dtcgPath ?? env.dtcgUrl,
+	)
 	return hasFigma && hasDtcg
-}
-
-function isTruthy(value: string | undefined): boolean {
-	if (!value) {
-		return false
-	}
-	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
 }
 
 function toError(error: unknown): Error {

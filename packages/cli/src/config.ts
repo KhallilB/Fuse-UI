@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs"
-import { join, resolve, extname } from "node:path"
+import { extname, join, resolve } from "node:path"
 import { pathToFileURL } from "node:url"
 
 export type TokenSourceConfig = DTCGSourceConfig | FigmaSourceConfig
@@ -98,7 +98,7 @@ async function importConfig(filePath: string): Promise<FuseUIConfig> {
 	}
 
 	if (extension === ".ts") {
-		await ensureTypeScriptLoader()
+		return await loadTypeScriptConfig(filePath)
 	}
 
 	const module = await import(pathToFileURL(filePath).href)
@@ -119,13 +119,41 @@ function normalizeConfig(value: unknown): FuseUIConfig {
 	}
 }
 
-async function ensureTypeScriptLoader(): Promise<void> {
-	const moduleId = "ts-node/register"
+async function loadTypeScriptConfig(filePath: string): Promise<FuseUIConfig> {
 	try {
-		await import(moduleId)
-	} catch {
+		// Try to use tsx's programmatic API to load the TypeScript file
+		// @ts-expect-error - tsx may not be installed, handled by catch block
+		const tsx = await import("tsx")
+		if (typeof tsx.load === "function") {
+			const module = await tsx.load(filePath)
+			const configExport = module.default ?? module.config ?? module
+			return normalizeConfig(configExport)
+		}
+
+		// Fallback: try using tsx/esm/api
+		// @ts-expect-error - tsx may not be installed, handled by catch block
+		const tsxApi = await import("tsx/esm/api")
+		if (typeof tsxApi.load === "function") {
+			const module = await tsxApi.load(filePath)
+			const configExport = module.default ?? module.config ?? module
+			return normalizeConfig(configExport)
+		}
+
+		// Last resort: try to register tsx loader and use standard import
+		if (typeof tsxApi.register === "function") {
+			tsxApi.register()
+			const module = await import(pathToFileURL(filePath).href)
+			const configExport = module.default ?? module.config ?? module
+			return normalizeConfig(configExport)
+		}
+	} catch (error) {
+		const reason = error instanceof Error ? error.message : String(error)
 		throw new ConfigError(
-			'Loading "fuseui.config.ts" requires ts-node. Install "ts-node" and try again or compile the config to JavaScript.',
+			`Failed to load TypeScript config: ${reason}. Ensure "tsx" is installed.`,
 		)
 	}
+
+	throw new ConfigError(
+		'Loading "fuseui.config.ts" requires tsx. Install "tsx" and try again or compile the config to JavaScript.',
+	)
 }

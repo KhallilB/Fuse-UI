@@ -5,6 +5,7 @@ import { Command } from "commander"
 
 import { handleCliError, setupImportCommand } from "./commands/import.js"
 import { createLogger } from "./logger.js"
+import { isTruthy } from "./utils/boolean.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -42,14 +43,3 @@ program.parseAsync(process.argv).catch((error: unknown) => {
 	const exitCode = handleCliError(error, logger, debugEnabled)
 	process.exitCode = exitCode
 })
-
-if (!process.argv.slice(2).length) {
-	program.outputHelp()
-}
-
-function isTruthy(value: string | undefined): boolean {
-	if (!value) {
-		return false
-	}
-	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
-}
