@@ -21,35 +21,51 @@ npm install --save-dev @fuseui-org/cli
 ## Usage
 
 ```bash
-# Show help
+# Show help and version
 fuseui --help
-
-# Show version
 fuseui --version
 
-# Import tokens using config (see below)
+# Import tokens using config file (see below)
 fuseui import
 
-# Import explicitly from a DTCG file
+# Import from a specific source in config
+fuseui import --source figma
+fuseui import --source local-draft
+
+# Import directly from DTCG file (bypasses config)
 fuseui import --dtcg-path ./tokens/primitives.json
 
-# Import from Figma Variables
-FUSEUI_FIGMA_API_KEY=xxx fuseui import --source figma --figma-file-key AbCd123
+# Import directly from Figma (bypasses config)
+fuseui import --figma-file-key AbCd123 --figma-api-key your-api-key
+
+# Import and push to Fuse API
+fuseui import --dtcg-path ./tokens.json --push --fuse-api-key your-fuse-key
+
+# Enable debug logging
+fuseui import --debug
 
 # Manage design tokens
 fuseui tokens
 
-# Generate code from design tokens
+# Generate code from tokens
 fuseui generate
 ```
 
 ## Import command
 
-The `fuseui import` command validates configuration, runs the appropriate importer (DTCG or Figma), and reports token counts, types, warnings, and errors. Use the `--debug` flag (or `FUSEUI_DEBUG=1`) for verbose traces.
+The `fuseui import` command ingests design tokens from configured sources (config file or CLI overrides), runs the appropriate importer (DTCG or Figma), and reports token counts, types, warnings, and errors.
+
+### Import modes
+
+The import command operates in two modes:
+
+1. **Config file mode** (default): Reads sources from `fuseui.config.*` and imports all matching sources. Use `--source` to filter by label or type.
+
+2. **CLI override mode**: When you provide CLI flags for a specific source type (e.g., `--dtcg-path` or `--figma-file-key`), the config file is ignored and only that source is imported. **Note**: You cannot mix Figma and DTCG CLI overrides in a single command.
 
 ### Config file
 
-Place a `fuseui.config.{json,js,ts}` file in your project root (or pass `--config path`), for example:
+Place a `fuseui.config.{json,js,ts}` file in your project root (or pass `--config <path>`), for example:
 
 ```json
 {
@@ -74,15 +90,33 @@ Place a `fuseui.config.{json,js,ts}` file in your project root (or pass `--confi
 
 Any value prefixed with `env:` is a reminder to provide it through environment variables; the CLI does not resolve that syntax automatically.
 
-### CLI overrides & environment variables
+### CLI options & environment variables
 
-- `--config` or `FUSEUI_CONFIG` – custom config path
-- `--source` – filter by label or type (`dtcg`, `figma`)
-- `--dtcg-path`, `--dtcg-url`, `FUSEUI_DTCG_FILE_PATH`, `FUSEUI_DTCG_FILE_URL`
-- `--figma-file-key`, `FUSEUI_FIGMA_FILE_KEY`
-- `--figma-api-key`, `FUSEUI_FIGMA_API_KEY`
-- `--figma-base-url`, `FUSEUI_FIGMA_BASE_URL`
-- `--debug`, `FUSEUI_DEBUG=1`
+**Global options:**
+
+- `--debug` or `FUSEUI_DEBUG=1` – Enable verbose logging
+
+**Config options:**
+
+- `-c, --config <path>` or `FUSEUI_CONFIG` – Custom config file path
+- `-s, --source <source>` – Filter config sources by label or type (`dtcg`, `figma`)
+
+**DTCG CLI overrides** (mutually exclusive with Figma overrides):
+
+- `--dtcg-path <path>` or `FUSEUI_DTCG_FILE_PATH` – Local DTCG file path
+- `--dtcg-url <url>` or `FUSEUI_DTCG_FILE_URL` – Remote DTCG file URL
+
+**Figma CLI overrides** (mutually exclusive with DTCG overrides):
+
+- `--figma-file-key <key>` or `FUSEUI_FIGMA_FILE_KEY` – Figma file key (required)
+- `--figma-api-key <key>` or `FUSEUI_FIGMA_API_KEY` – Figma API key (required)
+- `--figma-base-url <url>` or `FUSEUI_FIGMA_BASE_URL` – Figma API base URL (optional)
+
+**Push options:**
+
+- `--push` – Push imported tokens to Fuse API after import
+- `--fuse-api-key <key>` or `FUSEUI_API_KEY` – Fuse API key for push (required when using --push)
+- `--fuse-api-url <url>` or `FUSEUI_API_URL` – Fuse API base URL (optional, defaults to `https://api.fuseui.com`)
 
 ### Exit codes
 
