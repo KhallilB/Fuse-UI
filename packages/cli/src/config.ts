@@ -130,14 +130,8 @@ async function loadTypeScriptConfig(filePath: string): Promise<FuseUIConfig> {
 			return normalizeConfig(configExport)
 		}
 
-		// Fallback: try using tsx/esm/api
-		// @ts-expect-error - tsx may not be installed, handled by catch block
+		// Fallback: try using tsx/esm/api to register the loader
 		const tsxApi = await import("tsx/esm/api")
-		if (typeof tsxApi.load === "function") {
-			const module = await tsxApi.load(filePath)
-			const configExport = module.default ?? module.config ?? module
-			return normalizeConfig(configExport)
-		}
 
 		// Last resort: try to register tsx loader and use standard import
 		if (typeof tsxApi.register === "function") {
