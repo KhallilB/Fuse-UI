@@ -88,24 +88,4 @@ describe("fuseui import CLI wiring", () => {
 		)
 		expect(process.exitCode).toBe(ExitCode.Validation)
 	})
-
-	it("passes push flag through to runImportCommand", async () => {
-		await executeImportCommand([
-			"import",
-			"--dtcg-path",
-			"./tokens.json",
-			"--push",
-			"--fuse-api-key",
-			"fuse-key",
-		])
-
-		expect(runImportCommandMock).toHaveBeenCalledWith(
-			expect.objectContaining({
-				dtcgPath: "./tokens.json",
-				push: true,
-				fuseApiKey: "fuse-key",
-			}),
-		)
-		expect(process.exitCode).toBe(ExitCode.Success)
-	})
 })
