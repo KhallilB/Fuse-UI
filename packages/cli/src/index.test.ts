@@ -1,62 +1,111 @@
 import { Command } from "commander"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-// Mock the commander package
-vi.mock("commander", () => {
-	const mockSubCommand = {
-		description: vi.fn().mockReturnThis(),
-		option: vi.fn().mockReturnThis(),
-		action: vi.fn().mockReturnThis(),
-		optsWithGlobals: vi.fn().mockReturnValue({}),
-	}
+import type { ImportCommandOptions } from "./commands/import"
+import { ExitCode, setupImportCommand } from "./commands/import"
 
-	const mockCommand = {
-		name: vi.fn().mockReturnThis(),
-		description: vi.fn().mockReturnThis(),
-		version: vi.fn().mockReturnThis(),
-		option: vi.fn().mockReturnThis(),
-		command: vi.fn().mockReturnValue(mockSubCommand),
-		parseAsync: vi.fn().mockResolvedValue(undefined),
-		outputHelp: vi.fn(),
-	}
+const createLoggerMock = vi.hoisted(() => vi.fn())
 
-	return {
-		Command: vi.fn(() => mockCommand),
-	}
-})
-
-// Mock the fs module
-vi.mock("node:fs", () => ({
-	readFileSync: vi.fn().mockReturnValue('{"version": "0.1.0"}'),
+vi.mock("./logger.js", () => ({
+	createLogger: createLoggerMock,
 }))
 
-describe("CLI", () => {
-	it("should initialize properly", async () => {
-		// Import the CLI module (which will use our mocks)
-		const originalArgv = process.argv
-		process.argv = ["node", "fuseui"]
+const runImportCommandMock = vi.fn<
+	(options: ImportCommandOptions) => Promise<ExitCode>
+>(async () => ExitCode.Success)
 
-		// We need to reset the module cache to ensure our mocks are used
-		vi.resetModules()
+const createLoggerStub = () => ({
+	info: vi.fn(),
+	warn: vi.fn(),
+	error: vi.fn(),
+	debug: vi.fn(),
+})
 
-		// Import the CLI module
-		await import("./index.js")
+async function executeImportCommand(args: string[]): Promise<void> {
+	const program = new Command()
+	program.name("fuseui")
+	setupImportCommand(program, { runImport: runImportCommandMock })
+	await program.parseAsync(["node", "fuseui", ...args], { from: "node" })
+}
 
-		// Get the mocked Command instance
-		const commandInstance = new Command()
+describe("fuseui import CLI wiring", () => {
+	let logger: ReturnType<typeof createLoggerStub>
 
-		// Verify the CLI was initialized correctly
-		expect(commandInstance.name).toHaveBeenCalledWith("fuseui")
-		expect(commandInstance.description).toHaveBeenCalledWith(
-			expect.stringContaining("FuseUI CLI"),
+	beforeEach(() => {
+		logger = createLoggerStub()
+		createLoggerMock.mockClear()
+		createLoggerMock.mockImplementation(() => logger)
+		runImportCommandMock.mockClear()
+		runImportCommandMock.mockResolvedValue(ExitCode.Success)
+		process.exitCode = undefined
+	})
+
+	it("passes DTCG imports through to runImportCommand", async () => {
+		await executeImportCommand(["import", "--dtcg-path", "./tokens.json"])
+
+		expect(runImportCommandMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				dtcgPath: "./tokens.json",
+				debug: false,
+			}),
 		)
-		expect(commandInstance.version).toHaveBeenCalledWith("0.1.0")
-		expect(commandInstance.command).toHaveBeenCalledWith("import")
-		expect(commandInstance.command).toHaveBeenCalledWith("tokens")
-		expect(commandInstance.command).toHaveBeenCalledWith("generate")
-		expect(commandInstance.parseAsync).toHaveBeenCalledWith(process.argv)
+		expect(process.exitCode).toBe(ExitCode.Success)
+	})
 
-		// Restore original argv
-		process.argv = originalArgv
+	it("passes Figma imports through to runImportCommand", async () => {
+		await executeImportCommand([
+			"import",
+			"--figma-file-key",
+			"ABC123",
+			"--figma-api-key",
+			"secret",
+		])
+
+		expect(runImportCommandMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				figmaFileKey: "ABC123",
+				figmaApiKey: "secret",
+				debug: false,
+			}),
+		)
+		expect(process.exitCode).toBe(ExitCode.Success)
+	})
+
+	it("sets validation exit code when conflicting CLI sources are provided", async () => {
+		await executeImportCommand([
+			"import",
+			"--dtcg-path",
+			"./tokens.json",
+			"--figma-file-key",
+			"ABC123",
+			"--figma-api-key",
+			"secret",
+		])
+
+		expect(runImportCommandMock).not.toHaveBeenCalled()
+		expect(logger.error).toHaveBeenCalledWith(
+			"Provide either Figma overrides or DTCG overrides, not both at once.",
+		)
+		expect(process.exitCode).toBe(ExitCode.Validation)
+	})
+
+	it("passes push flag through to runImportCommand", async () => {
+		await executeImportCommand([
+			"import",
+			"--dtcg-path",
+			"./tokens.json",
+			"--push",
+			"--fuse-api-key",
+			"fuse-key",
+		])
+
+		expect(runImportCommandMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				dtcgPath: "./tokens.json",
+				push: true,
+				fuseApiKey: "fuse-key",
+			}),
+		)
+		expect(process.exitCode).toBe(ExitCode.Success)
 	})
 })

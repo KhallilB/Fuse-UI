@@ -1,9 +1,13 @@
 import type {
 	ImporterResult,
 	NormalizedToken,
+	NormalizedTokenSet,
 	TokenImporter,
+	TokenSetMetadata,
 } from "@fuseui-org/core"
 import { DTCGImporter, FigmaImporter } from "@fuseui-org/core"
+import { FuseClient } from "@fuseui-org/sdk"
+import type { Command } from "commander"
 import {
 	ConfigError,
 	type DTCGSourceConfig,
@@ -31,6 +35,9 @@ export interface ImportCommandOptions {
 	figmaApiKey?: string
 	figmaFileKey?: string
 	figmaBaseUrl?: string
+	push?: boolean
+	fuseApiKey?: string
+	fuseApiUrl?: string
 	env?: NodeJS.ProcessEnv
 	cwd?: string
 	logger?: Logger
@@ -49,6 +56,8 @@ export class CliError extends Error {
 	}
 }
 
+type ImportCommandRunner = (options: ImportCommandOptions) => Promise<ExitCode>
+
 type ImporterFactoryMap = {
 	dtcg: (source: DTCGSourceConfig) => TokenImporter
 	figma: (source: FigmaSourceConfig) => TokenImporter
@@ -60,12 +69,20 @@ const defaultFactories: ImporterFactoryMap = {
 			filePath: source.filePath,
 			fileUrl: source.fileUrl,
 		}),
-	figma: (source) =>
-		new FigmaImporter({
-			apiKey: source.apiKey!,
+	figma: (source) => {
+		if (!source.apiKey) {
+			throw new CliError(
+				`Missing Figma API key for source "${source.label ?? source.fileKey ?? "figma"}".`,
+				ExitCode.Validation,
+			)
+		}
+
+		return new FigmaImporter({
+			apiKey: source.apiKey,
 			fileKey: source.fileKey,
 			apiBaseUrl: source.apiBaseUrl,
-		}),
+		})
+	},
 }
 
 const ENV_KEYS = {
@@ -76,6 +93,8 @@ const ENV_KEYS = {
 	dtcgPath: "FUSEUI_DTCG_FILE_PATH",
 	dtcgUrl: "FUSEUI_DTCG_FILE_URL",
 	debug: "FUSEUI_DEBUG",
+	fuseApiKey: "FUSEUI_API_KEY",
+	fuseApiUrl: "FUSEUI_API_URL",
 }
 
 export async function runImportCommand(
@@ -124,6 +143,7 @@ export async function runImportCommand(
 	}
 
 	let exitCode: ExitCode = ExitCode.Success
+	const tokenSets: NormalizedTokenSet[] = []
 
 	for (const source of sources) {
 		const sourceLabel = describeSource(source)
@@ -144,13 +164,95 @@ export async function runImportCommand(
 		}
 
 		reportResult(logger, sourceLabel, result)
+		tokenSets.push(result.tokenSet)
 
 		if (result.errors.length > 0) {
 			exitCode = ExitCode.Validation
 		}
 	}
 
+	if (options.push && tokenSets.length > 0) {
+		const pushExitCode = await pushTokenSets(tokenSets, options, logger)
+		if (pushExitCode !== ExitCode.Success) {
+			exitCode = pushExitCode
+		}
+	}
+
 	return exitCode
+}
+
+export function setupImportCommand(
+	program: Command,
+	deps: { runImport?: ImportCommandRunner } = {},
+): void {
+	const runImport = deps.runImport ?? runImportCommand
+
+	program
+		.command("import")
+		.description("Ingest design tokens from configured sources")
+		.option("-c, --config <path>", "Path to fuseui.config file")
+		.option("-s, --source <source>", "Filter by source label or type")
+		.option("--dtcg-path <path>", "Override DTCG file path for imports")
+		.option("--dtcg-url <url>", "Override DTCG file URL for imports")
+		.option("--figma-api-key <key>", "Override Figma API key")
+		.option("--figma-file-key <fileKey>", "Override Figma file key")
+		.option("--figma-base-url <url>", "Override Figma API base URL")
+		.option("--push", "Push imported tokens to Fuse API")
+		.option("--fuse-api-key <key>", "Fuse API key for push (or FUSEUI_API_KEY)")
+		.option("--fuse-api-url <url>", "Fuse API base URL (or FUSEUI_API_URL)")
+		.action(async (commandOptions: ImportCommandOptions, command: Command) => {
+			const globalOptions =
+				typeof command.optsWithGlobals === "function"
+					? command.optsWithGlobals()
+					: (command.parent?.opts() ?? {})
+
+			const debugEnabled = Boolean(
+				globalOptions.debug ?? isTruthy(process.env.FUSEUI_DEBUG),
+			)
+			const logger = createLogger({ debug: debugEnabled })
+
+			if (hasConflictingCliSources(commandOptions)) {
+				logger.error(
+					"Provide either Figma overrides or DTCG overrides, not both at once.",
+				)
+				process.exitCode = ExitCode.Validation
+				return
+			}
+
+			try {
+				const exitCode = await runImport({
+					...commandOptions,
+					debug: debugEnabled,
+					logger,
+				})
+				process.exitCode = exitCode
+			} catch (error: unknown) {
+				process.exitCode = handleCliError(error, logger, debugEnabled)
+			}
+		})
+}
+
+export function handleCliError(
+	error: unknown,
+	logger: ReturnType<typeof createLogger>,
+	debugEnabled: boolean,
+): ExitCode {
+	if (error instanceof CliError) {
+		logger.error(error.message)
+		if (debugEnabled && error.details instanceof Error && error.details.stack) {
+			logger.debug(error.details.stack)
+		} else if (debugEnabled && error.stack) {
+			logger.debug(error.stack)
+		}
+		return error.exitCode
+	}
+
+	const message = error instanceof Error ? error.message : String(error)
+	logger.error(message)
+	if (debugEnabled && error instanceof Error && error.stack) {
+		logger.debug(error.stack)
+	}
+	return ExitCode.Fatal
 }
 
 function resolveSources(params: {
@@ -397,6 +499,8 @@ type EnvOverrides = {
 	dtcgPath?: string
 	dtcgUrl?: string
 	debug?: boolean
+	fuseApiKey?: string
+	fuseApiUrl?: string
 }
 
 function readEnv(env: NodeJS.ProcessEnv): EnvOverrides {
@@ -408,6 +512,79 @@ function readEnv(env: NodeJS.ProcessEnv): EnvOverrides {
 		dtcgPath: env[ENV_KEYS.dtcgPath],
 		dtcgUrl: env[ENV_KEYS.dtcgUrl],
 		debug: coerceBoolean(env[ENV_KEYS.debug]),
+		fuseApiKey: env[ENV_KEYS.fuseApiKey],
+		fuseApiUrl: env[ENV_KEYS.fuseApiUrl],
+	}
+}
+
+async function pushTokenSets(
+	tokenSets: NormalizedTokenSet[],
+	options: ImportCommandOptions,
+	logger: Logger,
+): Promise<ExitCode> {
+	const env = options.env ?? process.env
+	const envOverrides = readEnv(env)
+
+	const apiKey = options.fuseApiKey ?? envOverrides.fuseApiKey
+	if (!apiKey) {
+		throw new CliError(
+			"Missing Fuse API key for push. Provide --fuse-api-key or set FUSEUI_API_KEY.",
+			ExitCode.Validation,
+		)
+	}
+
+	const apiUrl = options.fuseApiUrl ?? envOverrides.fuseApiUrl
+	const client = new FuseClient({
+		apiKey,
+		baseUrl: apiUrl,
+	})
+
+	const mergedTokenSet = mergeTokenSets(tokenSets)
+	const tokenCount = Object.keys(mergedTokenSet.tokens).length
+
+	logger.info(
+		`Pushing ${tokenCount} token${tokenCount === 1 ? "" : "s"} to Fuse API...`,
+	)
+
+	try {
+		const result = await client.pushTokens(mergedTokenSet)
+		logger.info(
+			`Successfully pushed tokens to Fuse API: ${result.message} (${result.tokenCount} tokens)`,
+		)
+		return ExitCode.Success
+	} catch (error: unknown) {
+		const reason = error instanceof Error ? error.message : String(error)
+		throw new CliError(
+			`Failed to push tokens to Fuse API: ${reason}`,
+			ExitCode.Fatal,
+			error,
+		)
+	}
+}
+
+function mergeTokenSets(tokenSets: NormalizedTokenSet[]): NormalizedTokenSet {
+	if (tokenSets.length === 0) {
+		return { tokens: {} }
+	}
+
+	if (tokenSets.length === 1) {
+		return tokenSets[0] ?? { tokens: {} }
+	}
+
+	const mergedTokens: Record<string, NormalizedToken> = {}
+	const mergedMetadata: TokenSetMetadata = {}
+
+	for (const tokenSet of tokenSets) {
+		Object.assign(mergedTokens, tokenSet.tokens)
+		if (tokenSet.metadata) {
+			Object.assign(mergedMetadata, tokenSet.metadata)
+		}
+	}
+
+	return {
+		tokens: mergedTokens,
+		metadata:
+			Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
 	}
 }
 
@@ -416,6 +593,19 @@ function coerceBoolean(value?: string): boolean | undefined {
 		return undefined
 	}
 
+	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
+}
+
+function hasConflictingCliSources(options: ImportCommandOptions): boolean {
+	const hasFigma = Boolean(options.figmaFileKey ?? options.figmaApiKey)
+	const hasDtcg = Boolean(options.dtcgPath ?? options.dtcgUrl)
+	return hasFigma && hasDtcg
+}
+
+function isTruthy(value: string | undefined): boolean {
+	if (!value) {
+		return false
+	}
 	return ["1", "true", "yes", "on"].includes(value.toLowerCase())
 }
 
