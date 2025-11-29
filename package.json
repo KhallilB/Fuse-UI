@@ -25,7 +25,9 @@
 		"publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
 		"publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
 		"publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
-		"publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public"
+		"publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public",
+		"test:gitexporter": "bash scripts/gitexporter/validate.sh test",
+		"test:gitexporter:full": "bash scripts/gitexporter/replicate-ci-workflow.sh"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
@@ -34,6 +36,7 @@
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/git": "^10.0.1",
 		"husky": "^9.1.7",
+		"js-yaml": "^4.1.1",
 		"semantic-release": "^22.0.12",
 		"turbo": "^2.6.1",
 		"typescript": "5.9.2",
