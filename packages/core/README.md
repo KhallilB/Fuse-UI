@@ -15,22 +15,22 @@ pnpm add @fuseui-org/core
 ## Usage
 
 ```typescript
-import { TokenEngine } from '@fuseui-org/core';
+import { TokenEngine } from "@fuseui-org/core";
 
 // Initialize the engine
 const engine = new TokenEngine();
 
 // Process tokens from a source
 const processedTokens = engine.processTokens({
-  type: 'figma',
-  path: 'path/to/figma/tokens.json'
+  type: "figma",
+  path: "path/to/figma/tokens.json",
 });
 
 // Transform tokens to a specific format
-const transformedTokens = engine.transformTokens(processedTokens, 'css');
+const transformedTokens = engine.transformTokens(processedTokens, "css");
 
 // Export tokens to a destination
-engine.exportTokens(transformedTokens, 'path/to/output');
+engine.exportTokens(transformedTokens, "path/to/output");
 ```
 
 ## API Documentation
@@ -64,3 +64,5 @@ pnpm test
 - [CHANGELOG.md](../../CHANGELOG.md) - Version history
 - [TOKEN_SPEC.md](./TOKEN_SPEC.md) - Token input sources and data model specification
 - [Types Documentation](./src/types/README.md) - Type definitions and usage
+
+---
