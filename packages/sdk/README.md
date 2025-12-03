@@ -1,6 +1,11 @@
 # `@fuseui-org/sdk`
 
-FuseUI SDK providing programmatic access to the FuseUI API. Works in both browser and Node.js environments.
+FuseUI SDK providing programmatic access to the FuseUI API. Works in both browser and Node.js environments. The SDK targets modern JavaScript runtimes (ES2020+) in both Node.js and browser environments.
+
+## Requirements
+
+- Node.js 18+ (LTS) recommended
+- Modern browsers (last 2 versions of major vendors)
 
 ## Installation
 
@@ -36,6 +41,17 @@ try {
 } catch (error) {
   console.error("API Error:", error);
 }
+```
+
+### Configuration via environment variables
+
+In Node.js environments, you can centralize configuration with environment variables and pass them into the client:
+
+```typescript
+const client = new FuseClient({
+  apiKey: process.env.FUSE_API_KEY,
+  baseUrl: process.env.FUSE_API_BASE_URL ?? "https://api.fuseui.com",
+});
 ```
 
 ## API Documentation
