@@ -129,6 +129,8 @@ Any value prefixed with `env:` is a reminder to provide it through environment v
 - `2` – validation or configuration error (missing auth, unreadable path, schema issues)
 - `1` – fatal/unexpected error (e.g., network outage, crash)
 
+**Tip:** Use `--debug` or `FUSEUI_DEBUG=1` to enable verbose logging when troubleshooting import issues.
+
 ## Development
 
 ### Building

@@ -33,6 +33,10 @@ const transformedTokens = engine.transformTokens(processedTokens, "css");
 engine.exportTokens(transformedTokens, "path/to/output");
 ```
 
+## Supported Formats
+
+The core engine supports multiple input sources (Figma Variables, DTCG JSON) and output formats CSS custom properties, TypeScript types, Tailwind config, and more.
+
 ## API Documentation
 
 ### TokenEngine
