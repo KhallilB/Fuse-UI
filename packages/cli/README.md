@@ -18,6 +18,11 @@ npx @fuseui-org/cli --help
 npm install --save-dev @fuseui-org/cli
 ```
 
+## Requirements
+
+- Node.js 18+ (LTS) recommended
+- POSIX-compatible shell environment for best experience (macOS, Linux, or WSL on Windows)
+
 ## Usage
 
 ```bash
