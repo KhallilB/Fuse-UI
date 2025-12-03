@@ -9,14 +9,13 @@ permissions:
   contents: write
 
 jobs:
-  enable-automerge:
+  enable:
     runs-on: ubuntu-latest
     if: >
       startsWith(github.event.pull_request.head.ref, 'sync/') &&
       github.event.pull_request.base.ref == 'main'
-
     steps:
-      - name: Enable auto-merge (squash) for this PR
+      - name: Enable auto-merge (squash)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
