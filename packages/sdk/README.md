@@ -43,6 +43,17 @@ try {
 }
 ```
 
+### Configuration via environment variables
+
+In Node.js environments, you can centralize configuration with environment variables and pass them into the client:
+
+```typescript
+const client = new FuseClient({
+  apiKey: process.env.FUSE_API_KEY,
+  baseUrl: process.env.FUSE_API_BASE_URL ?? "https://api.fuseui.com",
+});
+```
+
 ## API Documentation
 
 ### FuseClient
