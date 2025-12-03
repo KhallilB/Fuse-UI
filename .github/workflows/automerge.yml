@@ -1,25 +1,49 @@
-name: Auto-merge sync PRs
+name: Sync PR auto-merge
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_run:
-    workflows: [CI]
+    workflows: ["CI"]
     types: [completed]
 
 permissions:
-  pull-requests: write
   contents: write
+  pull-requests: write
 
 jobs:
-  enable:
-    runs-on: ubuntu-latest
-    if: >
+  pr_:
+    if: github.event_name == 'pull_request' &&
       startsWith(github.event.pull_request.head.ref, 'sync/') &&
       github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
     steps:
-      - name: Enable auto-merge (squash)
+      - name: PR merge ok (stop-gap)
+        run: |
+          echo "PR merge ok"
+
+  merge:
+    if: github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge matching sync PR(s)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          gh pr merge "$PR_NUMBER" -R "$REPO" --squash --auto
+          set -euo pipefail
+
+          PRS=$(gh pr list -R "$REPO" --state open --json number,headRefName,headRefOid \
+            --jq '.[] | select(.headRefName | startswith("sync/")) | select(.headRefOid=="'"$SHA"'") | .number')
+
+          if [ -z "$PRS" ]; then
+            echo "No matching sync PR found for SHA $SHA"
+            exit 0
+          fi
+
+          for PR in $PRS; do
+            echo "Merging PR #$PR"
+            gh pr merge "$PR" -R "$REPO" --squash --delete-branch
+          done
