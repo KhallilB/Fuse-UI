@@ -2,6 +2,11 @@
 
 FuseUI SDK providing programmatic access to the FuseUI API. Works in both browser and Node.js environments. The SDK targets modern JavaScript runtimes (ES2020+) in both Node.js and browser environments.
 
+## Requirements
+
+- Node.js 18+ (LTS) recommended
+- Modern browsers (last 2 versions of major vendors)
+
 ## Installation
 
 ```bash
