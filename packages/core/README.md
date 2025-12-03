@@ -64,5 +64,3 @@ pnpm test
 - [CHANGELOG.md](../../CHANGELOG.md) - Version history
 - [TOKEN_SPEC.md](./TOKEN_SPEC.md) - Token input sources and data model specification
 - [Types Documentation](./src/types/README.md) - Type definitions and usage
-
----
