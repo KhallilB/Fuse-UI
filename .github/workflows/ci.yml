@@ -12,14 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 1) Install pnpm (uses packageManager from package.json)
+      - uses: pnpm/action-setup@v4
+
+      # 2) Now setup node + pnpm cache (pnpm exists)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-
-      - uses: pnpm/action-setup@v4
-        with:
-          run_install: false
 
       - run: pnpm install
       - run: pnpm build
