@@ -65,4 +65,20 @@ pnpm test
 - [TOKEN_SPEC.md](./TOKEN_SPEC.md) - Token input sources and data model specification
 - [Types Documentation](./src/types/README.md) - Type definitions and usage
 
--
+## Example: processing a local DTCG file
+
+```ts
+import { TokenEngine } from "@fuseui-org/core";
+import tokens from "./tokens/primitives.json";
+
+const engine = new TokenEngine();
+
+// Normalize raw tokens from a DTCG-compliant JSON file
+const processed = engine.processTokens({
+  type: "dtcg",
+  value: tokens,
+});
+
+// Convert to CSS custom properties
+const cssTokens = engine.transformTokens(processed, "css");
+```
