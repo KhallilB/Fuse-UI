@@ -25,6 +25,8 @@ npm install --save-dev @fuseui-org/cli
 
 ## Usage
 
+**Tip:** All commands support `--help` for detailed usage information and available options.
+
 ```bash
 # Show help and version
 fuseui --help
@@ -128,8 +130,6 @@ Any value prefixed with `env:` is a reminder to provide it through environment v
 - `0` – success (warnings may still be emitted)
 - `2` – validation or configuration error (missing auth, unreadable path, schema issues)
 - `1` – fatal/unexpected error (e.g., network outage, crash)
-
-**Tip:** Use `--debug` or `FUSEUI_DEBUG=1` to enable verbose logging when troubleshooting import issues.
 
 ## Development
 
