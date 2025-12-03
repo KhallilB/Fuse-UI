@@ -5,17 +5,21 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
-  contents: write
   pull-requests: write
+  contents: write
 
 jobs:
   enable-automerge:
     runs-on: ubuntu-latest
     if: >
-      github.event.pull_request.user.login == 'KhallilB' &&
-      startsWith(github.event.pull_request.head.ref, 'sync/')
+      startsWith(github.event.pull_request.head.ref, 'sync/') &&
+      github.event.pull_request.base.ref == 'main'
+
     steps:
-      - name: Enable auto-merge (squash)
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          merge-method: squash
+      - name: Enable auto-merge (squash) for this PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr merge "$PR_NUMBER" -R "$REPO" --squash --auto
