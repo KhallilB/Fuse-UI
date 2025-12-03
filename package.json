@@ -1,52 +1,53 @@
 {
-	"name": "fuse-ui",
-	"version": "0.12.3",
-	"private": true,
-	"scripts": {
-		"prepare": "husky",
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"web:prod": "pnpm --filter web start",
-		"server:prod": "pnpm --filter server start",
-		"test": "turbo run test",
-		"test:affected": "turbo run test --affected",
-		"lint": "turbo run format-and-lint",
-		"lint:fix": "turbo run format-and-lint:fix",
-		"lint:affected": "turbo run format-and-lint --affected",
-		"check-types": "turbo run check-types",
-		"fuseui:up": "docker compose up --build",
-		"fuseui:down": "docker compose down -v",
-		"fuseui:prod": "docker compose -f docker-compose.prod.yml build",
-		"fuseui:prod:up": "docker compose -f docker-compose.prod.yml up",
-		"fuseui:prod:down": "docker compose -f docker-compose.prod.yml down -v",
-		"fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
-		"semantic-release": "semantic-release",
-		"semantic-release:dry": "semantic-release --dry-run",
-		"publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
-		"publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
-		"publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
-		"publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.4",
-		"@commitlint/cli": "^20.0.0",
-		"@commitlint/config-conventional": "^20.0.0",
-		"@semantic-release/changelog": "^6.0.3",
-		"@semantic-release/git": "^10.0.1",
-		"husky": "^9.1.7",
-		"js-yaml": "^4.1.1",
-		"semantic-release": "^22.0.12",
-		"turbo": "^2.6.1",
-		"typescript": "5.9.2",
-		"vitest": "^3.2.4"
-	},
-	"packageManager": "pnpm@10.23.0",
-	"engines": {
-		"node": ">=20"
-	},
-	"commitlint": {
-		"extends": [
-			"@commitlint/config-conventional"
-		]
-	}
+  "name": "fuse-ui",
+  "version": "0.12.3",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "web:prod": "pnpm --filter web start",
+    "server:prod": "pnpm --filter server start",
+    "test": "turbo run test",
+    "test:affected": "turbo run test --affected",
+    "lint": "turbo run format-and-lint",
+    "lint:fix": "turbo run format-and-lint:fix",
+    "lint:affected": "turbo run format-and-lint --affected",
+    "check-types": "turbo run check-types",
+    "fuseui:up": "docker compose up --build",
+    "fuseui:down": "docker compose down -v",
+    "fuseui:prod": "docker compose -f docker-compose.prod.yml build",
+    "fuseui:prod:up": "docker compose -f docker-compose.prod.yml up",
+    "fuseui:prod:down": "docker compose -f docker-compose.prod.yml down -v",
+    "fuseui:test": "docker compose run --rm web pnpm test && docker compose run --rm server pnpm test",
+    "semantic-release": "semantic-release",
+    "semantic-release:dry": "semantic-release --dry-run",
+    "publish-packages": "pnpm publish-packages:cli && pnpm publish-packages:sdk",
+    "publish-packages:cli": "pnpm --filter @fuseui-org/cli publish --no-git-checks --access public || pnpm --filter @fuseui-org/cli publish --no-git-checks --access public --force",
+    "publish-packages:sdk": "pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public || pnpm --filter @fuseui-org/sdk publish --no-git-checks --access public --force",
+    "publish-packages:dry-run": "pnpm --filter @fuseui-org/cli publish --dry-run --no-git-checks --access public && pnpm --filter @fuseui-org/sdk publish --dry-run --no-git-checks --access public",
+    "cli": "pnpm -C packages/cli fuseui --help"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "@commitlint/cli": "^20.0.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "husky": "^9.1.7",
+    "js-yaml": "^4.1.1",
+    "semantic-release": "^22.0.12",
+    "turbo": "^2.6.1",
+    "typescript": "5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "packageManager": "pnpm@10.23.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
 }
