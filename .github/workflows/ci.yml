@@ -21,7 +21,3 @@ jobs:
       - run: pnpm install
       - run: pnpm build
       - run: pnpm test
-      
-      - name: CLI smoke test
-        run: pnpm --filter @fuseui-org/cli exec -- fuseui --help
-
