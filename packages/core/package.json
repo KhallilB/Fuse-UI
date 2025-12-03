@@ -1,0 +1,30 @@
+{
+	"name": "@fuseui-org/core",
+	"version": "0.2.3",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"lint": "turbo run format-and-lint",
+		"lint:fix": "turbo run format-and-lint:fix",
+		"check-types": "tsc --noEmit"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@fuseui-org/typescript-config": "workspace:*",
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.2"
+	}
+}

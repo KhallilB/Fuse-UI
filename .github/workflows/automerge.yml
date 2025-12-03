@@ -1,0 +1,24 @@
+name: Auto-merge sync PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    if: >
+      startsWith(github.event.pull_request.head.ref, 'sync/') &&
+      github.event.pull_request.base.ref == 'main'
+    steps:
+      - name: Enable auto-merge (squash)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr merge "$PR_NUMBER" -R "$REPO" --squash --auto
