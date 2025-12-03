@@ -72,7 +72,7 @@ The import command operates in two modes:
 
 ### Config file
 
-Place a `fuseui.config.{json,js,ts}` file in your project root (or pass `--config <path>`), for example:
+Place a `fuseui.config.{json,js,ts}` file in your project root (or pass `--config <path>`). The CLI will automatically discover config files in the current working directory, for example:
 
 ```json
 {
