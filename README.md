@@ -45,6 +45,52 @@ pnpm fuseui:down
 
 See the [Docker](#docker) section for more details.
 
+## Package Manager (Corepack)
+
+This project uses [Corepack](https://nodejs.org/api/corepack.html) to manage the pnpm version. Corepack ensures all contributors use the same pnpm version specified in `package.json`.
+
+### Configuration
+
+The project specifies the pnpm version in `package.json`:
+
+```json
+"packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
+```
+
+### Enabling Corepack Locally
+
+Corepack is included with Node.js 16.9+ and enabled by default in Node.js 20+. If you need to enable it manually:
+
+```bash
+# Enable corepack (Node.js 16.9+)
+corepack enable
+
+# Verify pnpm version matches package.json
+pnpm --version
+```
+
+### Docker Usage
+
+Dockerfiles automatically enable corepack and prepare the correct pnpm version:
+
+```dockerfile
+RUN corepack enable \
+    && corepack prepare pnpm@${PNPM_VERSION} --activate
+```
+
+This ensures Docker builds use the exact pnpm version specified in the project.
+
+### CI/CD Usage
+
+CI workflows should enable corepack before installing dependencies:
+
+```bash
+corepack enable
+pnpm install
+```
+
+This ensures consistent package manager versions across all environments.
+
 ## Code Quality
 
 This project uses [Biome](https://biomejs.dev/) for linting and formatting. Biome is a fast, modern linter and formatter for JavaScript and TypeScript.
